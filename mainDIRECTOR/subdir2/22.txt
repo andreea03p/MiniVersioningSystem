@@ -1,0 +1,2 @@
+Apelurile sistem, dar si functiile de biblioteca, de obicei returneaza anumite valori prin care se comunica apelantului daca acel apel s-a executat corect sau nu. Valoarea efectiv returnata se poate afla in pagina de manual a functiei respective, fie ca este vorba de apel sistem sau functie de biblioteca. In cazul in care un apel sistem sau functie de biblioteca s-a terminat cu eroare este posibil ca toate operatiunile urmatoare efectuate de programator sa fie compromise. Din aceste motive, este absolut necear sa se testeze.
+
