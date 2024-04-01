@@ -2,5 +2,6 @@ mode_t    st_mode;        /* file type */
 off_t     st_size;        /* total size, in bytes */
 struct timespec st_mtim;  /* time of last modification */
 struct timespec st_atim;  /* time of last access */
-parent folder
+parent folder             /* string */
 permissions
+file name                 /* string */
