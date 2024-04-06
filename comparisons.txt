@@ -1,0 +1,49 @@
+Folder: DIRECTOR1/subdir/.., File: sub1.java - Same amount of data
+
+Folder: DIRECTOR1/subdir/.., File: sub3.sh - Same amount of data
+
+Folder: DIRECTOR1/subdir/.., File: sub2.py - Same amount of data
+
+Folder: DIRECTOR1/.., File: file1.txt - Same amount of data
+
+Folder: DIRECTOR1/.., File: new2.txt - Same amount of data
+
+Folder: DIRECTOR1/.., File: file2.txt - Same amount of data
+
+Folder: DIRECTOR1/.., File: ewrwer.c - Same amount of data
+
+Folder: DIRECTOR1/.., File: file3.txt - Same amount of data
+
+Folder: DIRECTOR1/subdir2/.., File: crazy.c - Same amount of data
+
+Folder: DIRECTOR1/subdir2/.., File: 2.txt - Same amount of data
+
+Folder: DIRECTOR1/subdir2/.., File: 22.txt - Same amount of data
+
+Folder: DIRECTOR1/.., File: new.txt - Same amount of data
+
+Folder: DIRECTOR2/subdir/.., File: hardcoding.c - Same amount of data
+
+Folder: DIRECTOR2/subdir/.., File: aux.txt - Same amount of data
+
+Folder: DIRECTOR2/subdir/subsub/.., File: fisbin.c - Same amount of data
+
+Folder: DIRECTOR2/.., File: date3.txt - Some data was added
+Folder: DIRECTOR2/.., File: date3.txt was renamed to date3.txt
+
+Folder: DIRECTOR2/.., File: date3.txt was accessed in the meantime
+Folder: DIRECTOR2/.., File: date3.txt was modified in the meantime
+Folder: DIRECTOR2/.., File: New.txt - Same amount of data
+
+Folder: DIRECTOR2/.., File: back2.c - Same amount of data
+
+Folder: DIRECTOR2/.., File: lista5.c - Same amount of data
+
+Folder: DIRECTOR3/.., File: biti.c - Same amount of data
+
+Folder: DIRECTOR3/.., File: integers.bin - Same amount of data
+
+Folder: DIRECTOR3/.., File: file.csv - Same amount of data
+
+Folder: DIRECTOR3/.., File: caractere.c - Same amount of data
+

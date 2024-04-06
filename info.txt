@@ -4,3 +4,4 @@ struct timespec st_mtim;  /* time of last modification */
 struct timespec st_atim;  /* time of last access */
 parent folder
 permissions
+i_node
