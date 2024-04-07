@@ -4,8 +4,5 @@ struct timespec st_mtim;  /* time of last modification */
 struct timespec st_atim;  /* time of last access */
 parent folder             /* string */
 permissions
-<<<<<<< HEAD
 i_node
-=======
 file name                 /* string */
->>>>>>> f5282714f0d0295833cfd8a00106c1672915c75f
