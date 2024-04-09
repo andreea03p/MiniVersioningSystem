@@ -99,6 +99,7 @@ int readSnapshot(const char *snapshot_path)
 // Compare previous vs current version
 void comparePrevVsCurr(const char *path)
 {
+    fprintf(f, "%ld - %ld\n",myPreviousInfo.st_ino, myCurrentInfo.st_ino);
     if(myCurrentInfo.st_atime != myPreviousInfo.st_atime)
     {
         fprintf(f, "Folder: %s, File: %s was accessed in the meantime\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
@@ -122,11 +123,17 @@ void comparePrevVsCurr(const char *path)
         fprintf(f, "Folder: %s, File: %s - Same amount of data\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
     }
 
-    /*if (myCurrentInfo.st_ino != myPreviousInfo.st_ino ||
-        strcmp(myCurrentInfo.filename, myPreviousInfo.filename) != 0)
+    if (myCurrentInfo.st_ino != myPreviousInfo.st_ino)
     {
         fprintf(f, "Folder: %s, File: %s was renamed to %s\n", myCurrentInfo.parent_folder, myPreviousInfo.filename, myCurrentInfo.filename);
-    }*/
+    }
+
+    
+    if(strcmp(myCurrentInfo.parent_folder, myPreviousInfo.parent_folder) != 0)
+    {
+        fprintf(f, "File: %s was moved from %s TO %s\n", myCurrentInfo.filename, myPreviousInfo.parent_folder, myCurrentInfo.parent_folder);
+    }
+
 
     fprintf(f, "\n");
 }
@@ -147,7 +154,7 @@ void parseDir(const char *dir_name, const char *snapshots_dir)
     
     while ((file = readdir(dir)) != NULL) 
     {
-    	// Obtain path by name         
+    	// Obtain path         
         char path[PATH_LENGTH];
         snprintf(path, sizeof(path), "%s/%s", dir_name, file->d_name);
         
@@ -160,7 +167,7 @@ void parseDir(const char *dir_name, const char *snapshots_dir)
         if (isRegularFile(path)) 
         {
             char snapshot_path[PATH_LENGTH];
-            // create .ss file and put it in snapshot dir
+            // create .ss buffer
             snprintf(snapshot_path, PATH_LENGTH, "%s/%s.ss", snapshots_dir, file->d_name);
             
             if (stat(path, &file_stat) == -1) 
@@ -189,6 +196,7 @@ void parseDir(const char *dir_name, const char *snapshots_dir)
             } 
             else 
             {
+                fprintf(f, "Folder: %s, File: %s was added\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
                 writeSnapshot(snapshot_path);
             }
         }
@@ -205,7 +213,7 @@ void parseDir(const char *dir_name, const char *snapshots_dir)
 
 int main(int argc, char *argv[]) 
 {
-    if (argc < 4 || argc > 13)
+    if (argc < 4 || argc > 12)
     {
         perror("Usage: ./program -o <output_directory> <input_directories>\n");
         exit(EXIT_FAILURE);
@@ -218,9 +226,9 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    const char *snapshots_dir = argv[2];
+    const char *snapshots_dir = argv[argc-1];
 
-    for(int i = 3; i < argc; i++)
+    for(int i = 2; i < argc; i++)
     {
         const char *input_directory = argv[i];
         if(isDirectory(input_directory) && isDirectory(snapshots_dir))

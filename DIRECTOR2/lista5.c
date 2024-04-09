@@ -1,4 +1,4 @@
-// depozit
+// depozit  
 
 #include <stdio.h>
 #include <stdlib.h>

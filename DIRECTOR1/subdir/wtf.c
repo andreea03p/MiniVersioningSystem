@@ -4,13 +4,14 @@
 #include <math.h>
 #include <ctype.h>
 
+
+
 // pb 1
 /*
 typedef struct{
     float nota;
     char nume[20];
 }student;
-
 
 void citire(student *array, int size)
 {
