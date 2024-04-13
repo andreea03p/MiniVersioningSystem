@@ -9,6 +9,7 @@
 #include <limits.h> 
 #include <time.h>
 #include <sys/types.h>
+#include <stdarg.h>
 
 
 #define PATH_LENGTH 1000
@@ -22,7 +23,7 @@ typedef struct
     time_t st_atime;          // time of last access
     char parent_folder[256];  // parent folders
     ino_t st_ino;             // i node
-    char filename[256];
+    char filename[256];       // file name
 
 } FileInfo;
 
@@ -30,9 +31,50 @@ FileInfo myCurrentInfo;
 FileInfo myPreviousInfo;
 struct stat file_stat;
 FILE *f;
+FILE *info_file;
 
 
-// Check if is a directory
+char* mode_to_symbolic(mode_t mode) 
+{
+    char* symbolic = (char*)malloc(10 * sizeof(char));
+    if (symbolic == NULL) 
+    {
+        return NULL;
+    }
+
+    // Owner
+    symbolic[0] = (mode & S_IRUSR) ? 'r' : '-';
+    symbolic[1] = (mode & S_IWUSR) ? 'w' : '-';
+    symbolic[2] = (mode & S_IXUSR) ? 'x' : '-';
+    // Group
+    symbolic[3] = (mode & S_IRGRP) ? 'r' : '-';
+    symbolic[4] = (mode & S_IWGRP) ? 'w' : '-';
+    symbolic[5] = (mode & S_IXGRP) ? 'x' : '-';
+    // Others
+    symbolic[6] = (mode & S_IROTH) ? 'r' : '-';
+    symbolic[7] = (mode & S_IWOTH) ? 'w' : '-';
+    symbolic[8] = (mode & S_IXOTH) ? 'x' : '-';
+    symbolic[9] = '\0';
+    
+    return symbolic;
+}
+
+// Print info in a txt file
+void printFileInfoToFile(const FileInfo *info, FILE *file)
+{
+    fprintf(file, "Inode: %ld\n", info->st_ino);
+    char *permissions = mode_to_symbolic(info->st_mode);
+    fprintf(file, "File Permissions: %s\n", permissions);
+    free(permissions);
+    fprintf(file, "Size: %ld bytes\n", info->st_size);
+    fprintf(file, "Last Modification Time: %s", ctime(&info->st_mtime));
+    fprintf(file, "Last Access Time: %s", ctime(&info->st_atime));
+    fprintf(file, "Parent Folder: %s\n", info->parent_folder);
+    fprintf(file, "Filename: %s\n", info->filename);
+    fprintf(file, "\n\n");
+}
+
+
 int isDirectory(const char *path) 
 {
    struct stat statbuf;
@@ -43,7 +85,6 @@ int isDirectory(const char *path)
    return S_ISDIR(statbuf.st_mode);
 }
 
-// Check if it's a regular file
 int isRegularFile(const char *path)
 {
     struct stat path_stat;
@@ -52,11 +93,34 @@ int isRegularFile(const char *path)
     return S_ISREG(path_stat.st_mode);
 }
 
+// int isSymbolicLink(const char *path) 
+// {
+//     struct stat statbuf;
+//     if (lstat(path, &statbuf) == -1) 
+//     {
+//         perror("Error getting file information");
+//         exit(EXIT_FAILURE);
+//     }
+    
+//     return S_ISLNK(statbuf.st_mode);
+// }
+
+// int isHardLink(const char *path) 
+// {
+//     struct stat statbuf;
+//     if (lstat(path, &statbuf) != 0) 
+//     {
+//         perror("Unable to get file information");
+//         exit(EXIT_FAILURE);
+//     }
+//     return (statbuf.st_nlink > 1) ? 1 : 0;
+// }
+
 
 // Write info in snapshot
 void writeSnapshot(const char *snapshot_path)
 {
-    int snapshot = open(snapshot_path, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IXUSR);
+    int snapshot = open(snapshot_path, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
     if (snapshot == -1) 
     {
         perror("Error opening snapshot file to write in\n");
@@ -97,47 +161,54 @@ int readSnapshot(const char *snapshot_path)
 
 
 // Compare previous vs current version
-void comparePrevVsCurr(const char *path)
+int comparePrevVsCurr(const char *path)
 {
+    int counter = 0;
+
     fprintf(f, "%ld - %ld\n",myPreviousInfo.st_ino, myCurrentInfo.st_ino);
     if(myCurrentInfo.st_atime != myPreviousInfo.st_atime)
     {
         fprintf(f, "Folder: %s, File: %s was accessed in the meantime\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
+        counter++;
     }
 
     if(myCurrentInfo.st_mtime != myPreviousInfo.st_mtime)
     {
         fprintf(f, "Folder: %s, File: %s was modified in the meantime\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
+        counter++;
     }
 
     if (myCurrentInfo.st_size < myPreviousInfo.st_size)
     {
         fprintf(f, "Folder: %s, File: %s - Some data was removed\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
+        counter++;
     }
     else if (myCurrentInfo.st_size > myPreviousInfo.st_size)
     {
         fprintf(f, "Folder: %s, File: %s - Some data was added\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
+        counter++;
     }
     else
     {
         fprintf(f, "Folder: %s, File: %s - Same amount of data\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
+        counter++;
     }
 
-    if (myCurrentInfo.st_ino != myPreviousInfo.st_ino)
-    {
-        fprintf(f, "Folder: %s, File: %s was renamed to %s\n", myCurrentInfo.parent_folder, myPreviousInfo.filename, myCurrentInfo.filename);
-    }
-
-    
     if(strcmp(myCurrentInfo.parent_folder, myPreviousInfo.parent_folder) != 0)
     {
         fprintf(f, "File: %s was moved from %s TO %s\n", myCurrentInfo.filename, myPreviousInfo.parent_folder, myCurrentInfo.parent_folder);
+        counter++;
     }
 
+    if(myCurrentInfo.st_mode != myPreviousInfo.st_mode)
+    {
+        fprintf(f, "File: %s; permissions were changed from %s TO %s\n", myCurrentInfo.filename, mode_to_symbolic(myPreviousInfo.st_mode), mode_to_symbolic(myCurrentInfo.st_mode));
+    }
 
     fprintf(f, "\n");
-}
 
+    return counter;
+}
 
 // Process the directory and call the subdirectories
 void parseDir(const char *dir_name, const char *snapshots_dir) 
@@ -175,7 +246,7 @@ void parseDir(const char *dir_name, const char *snapshots_dir)
                 perror("error getting info\n");
                 exit(EXIT_FAILURE);
             }
-        
+
             // Get parent folder
             char parent[PATH_LENGTH];
             snprintf(parent, sizeof(parent), "%s/..", dir_name);
@@ -186,25 +257,38 @@ void parseDir(const char *dir_name, const char *snapshots_dir)
             myCurrentInfo.st_mtime = file_stat.st_mtime;
             myCurrentInfo.st_atime = file_stat.st_atime;
             strcpy(myCurrentInfo.parent_folder, parent);
-            myCurrentInfo.st_mode = S_IRUSR | S_IWUSR | S_IXUSR;
             strcpy(myCurrentInfo.filename, file->d_name);
             
-            if (readSnapshot(snapshot_path)) 
+            printFileInfoToFile(&myCurrentInfo, info_file);
+            
+            int snapshotStatus = readSnapshot(snapshot_path);
+            if (snapshotStatus == 0) 
             {
-                comparePrevVsCurr(path);
                 writeSnapshot(snapshot_path);
             } 
             else 
             {
-                fprintf(f, "Folder: %s, File: %s was added\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
-                writeSnapshot(snapshot_path);
+                if(comparePrevVsCurr(path) > 0)
+                {
+                    writeSnapshot(snapshot_path);
+                }
             }
         }
-        
+
         if (isDirectory(path)) 
         {
             parseDir(path, snapshots_dir);
         }
+
+        // if (isSymbolicLink(path)) 
+        // {
+        //     printf("%s is a symbolic link\n", path);
+        // }
+
+        // if (isHardLink(path)) 
+        // {
+        //     printf("%s is a hard link\n", path);
+        // }
     }
 
     closedir(dir);
@@ -225,10 +309,18 @@ int main(int argc, char *argv[])
         perror("error opening file to write comparisons\n");
         exit(EXIT_FAILURE);
     }
+    
+    info_file = fopen("info.txt", "w");
+    if (info_file == NULL)
+    {
+        perror("Error opening output info file\n");
+        return 1;
+    }
+    
 
-    const char *snapshots_dir = argv[argc-1];
+    const char *snapshots_dir = argv[2];
 
-    for(int i = 2; i < argc; i++)
+    for(int i = 3; i < argc; i++)
     {
         const char *input_directory = argv[i];
         if(isDirectory(input_directory) && isDirectory(snapshots_dir))
@@ -236,7 +328,9 @@ int main(int argc, char *argv[])
             parseDir(input_directory, snapshots_dir);
         }
     }
+    
 
+    fclose(info_file);
     fclose(f);
 
     return 0;
