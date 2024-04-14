@@ -2,7 +2,7 @@ Inode: 536463
 File Permissions: rwxrwxrwx
 Size: 4159 bytes
 Last Modification Time: Sun Mar 31 00:01:05 2024
-Last Access Time: Sun Apr  7 02:53:39 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
 Parent Folder: DIRECTOR1/subdir/..
 Filename: sub1.java
 
@@ -16,20 +16,11 @@ Parent Folder: DIRECTOR1/subdir/..
 Filename: ceva.c
 
 
-Inode: 536465
-File Permissions: rwxrwxrwx
-Size: 520 bytes
-Last Modification Time: Sun Mar 31 00:01:05 2024
-Last Access Time: Sun Apr  7 02:53:39 2024
-Parent Folder: DIRECTOR1/subdir/..
-Filename: sub3.sh
-
-
 Inode: 536464
 File Permissions: rwxrwxrwx
 Size: 882 bytes
 Last Modification Time: Sun Mar 31 00:01:05 2024
-Last Access Time: Sun Apr  7 02:53:39 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
 Parent Folder: DIRECTOR1/subdir/..
 Filename: sub2.py
 
@@ -38,52 +29,34 @@ Inode: 536730
 File Permissions: rwxrwxrwx
 Size: 6070 bytes
 Last Modification Time: Sun Apr 14 00:18:59 2024
-Last Access Time: Sun Apr 14 00:18:59 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
 Parent Folder: DIRECTOR1/subdir/..
-Filename: hgdftghtdgyet.c
-
-
-Inode: 535387
-File Permissions: rwxrwxrwx
-Size: 1090 bytes
-Last Modification Time: Tue Apr  9 23:02:30 2024
-Last Access Time: Sun Apr 14 00:44:59 2024
-Parent Folder: DIRECTOR1/..
-Filename: sym1
-
-
-Inode: 535387
-File Permissions: rwxrwxrwx
-Size: 1090 bytes
-Last Modification Time: Tue Apr  9 23:02:30 2024
-Last Access Time: Sun Apr 14 00:44:59 2024
-Parent Folder: DIRECTOR1/..
-Filename: file1.txt
-
-
-Inode: 536457
-File Permissions: rwxrwxrwx
-Size: 917 bytes
-Last Modification Time: Sun Mar 31 00:01:05 2024
-Last Access Time: Sun Apr  7 02:53:39 2024
-Parent Folder: DIRECTOR1/..
-Filename: sym2
+Filename: hello.c
 
 
 Inode: 536458
 File Permissions: rwxrwxrwx
 Size: 13 bytes
 Last Modification Time: Sun Mar 31 00:01:05 2024
-Last Access Time: Sun Apr  7 02:53:39 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
 Parent Folder: DIRECTOR1/..
 Filename: whatever.txt
+
+
+Inode: 536465
+File Permissions: rwxrwxrwx
+Size: 520 bytes
+Last Modification Time: Sun Mar 31 00:01:05 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
+Parent Folder: DIRECTOR1/..
+Filename: prob.sh
 
 
 Inode: 536457
 File Permissions: rwxrwxrwx
 Size: 917 bytes
 Last Modification Time: Sun Mar 31 00:01:05 2024
-Last Access Time: Sun Apr  7 02:53:39 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
 Parent Folder: DIRECTOR1/..
 Filename: fisier.txt
 
@@ -92,7 +65,7 @@ Inode: 536553
 File Permissions: rwxrwxrwx
 Size: 1081 bytes
 Last Modification Time: Tue Apr  2 01:25:50 2024
-Last Access Time: Sun Apr  7 02:53:39 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
 Parent Folder: DIRECTOR1/subdir2/..
 Filename: crazy.c
 
@@ -101,7 +74,7 @@ Inode: 536467
 File Permissions: rwxrwxrwx
 Size: 2568 bytes
 Last Modification Time: Sun Mar 31 00:01:05 2024
-Last Access Time: Sun Apr  7 02:53:39 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
 Parent Folder: DIRECTOR1/subdir2/..
 Filename: 2.txt
 
@@ -110,16 +83,25 @@ Inode: 536468
 File Permissions: rwxrwxrwx
 Size: 532 bytes
 Last Modification Time: Sun Mar 31 00:01:05 2024
-Last Access Time: Sun Apr  7 02:53:39 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
 Parent Folder: DIRECTOR1/subdir2/..
 Filename: 22.txt
+
+
+Inode: 535387
+File Permissions: rwxrwxrwx
+Size: 1090 bytes
+Last Modification Time: Tue Apr  9 23:02:30 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
+Parent Folder: DIRECTOR1/..
+Filename: rem.txt
 
 
 Inode: 524744
 File Permissions: rwxrwxrwx
 Size: 2006 bytes
 Last Modification Time: Thu Jan 18 21:58:12 2024
-Last Access Time: Sun Apr  7 00:43:09 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
 Parent Folder: DIRECTOR2/subdir/..
 Filename: back.c
 
@@ -128,7 +110,7 @@ Inode: 524763
 File Permissions: rwxrwxrwx
 Size: 2063 bytes
 Last Modification Time: Sat Apr 22 21:52:15 2023
-Last Access Time: Sun Apr  7 00:43:09 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
 Parent Folder: DIRECTOR2/subdir/..
 Filename: hardcoding.c
 
@@ -137,7 +119,7 @@ Inode: 524761
 File Permissions: rwxrwxrwx
 Size: 28 bytes
 Last Modification Time: Fri May 19 00:54:19 2023
-Last Access Time: Sun Apr  7 00:43:09 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
 Parent Folder: DIRECTOR2/subdir/..
 Filename: aux.txt
 
@@ -146,61 +128,61 @@ Inode: 524762
 File Permissions: rwxrwxrwx
 Size: 9337 bytes
 Last Modification Time: Sun Apr 23 00:22:30 2023
-Last Access Time: Sun Apr  7 02:53:39 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
 Parent Folder: DIRECTOR2/subdir/subsub/..
 Filename: fisbin.c
-
-
-Inode: 524983
-File Permissions: rwxrwxrwx
-Size: 26 bytes
-Last Modification Time: Sun Apr  7 03:12:51 2024
-Last Access Time: Sun Apr 14 01:01:23 2024
-Parent Folder: DIRECTOR2/..
-Filename: date3.txt
-
-
-Inode: 524858
-File Permissions: rwxr-x--x
-Size: 22 bytes
-Last Modification Time: Sun Apr  7 01:51:26 2024
-Last Access Time: Sun Apr  7 02:53:39 2024
-Parent Folder: DIRECTOR2/..
-Filename: New.txt
-
-
-Inode: 525052
-File Permissions: rwxrwxrwx
-Size: 4167 bytes
-Last Modification Time: Sun Apr  7 03:16:24 2024
-Last Access Time: Tue Apr  9 23:07:29 2024
-Parent Folder: DIRECTOR2/..
-Filename: lista5.c
-
-
-Inode: 524983
-File Permissions: rwxrwxrwx
-Size: 26 bytes
-Last Modification Time: Sun Apr  7 03:12:51 2024
-Last Access Time: Sun Apr 14 01:01:23 2024
-Parent Folder: DIRECTOR2/..
-Filename: sym3
 
 
 Inode: 534879
 File Permissions: rwxrwxrwx
 Size: 2792 bytes
 Last Modification Time: Tue Apr  9 22:35:51 2024
-Last Access Time: Tue Apr  9 23:07:29 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
 Parent Folder: DIRECTOR2/..
 Filename: caractere.c
+
+
+Inode: 524858
+File Permissions: rwxr-x--x
+Size: 22 bytes
+Last Modification Time: Sun Apr  7 01:51:26 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
+Parent Folder: DIRECTOR2/..
+Filename: fgfgsrg.txt
+
+
+Inode: 524983
+File Permissions: rwxrwxrwx
+Size: 26 bytes
+Last Modification Time: Sun Apr  7 03:12:51 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
+Parent Folder: DIRECTOR2/..
+Filename: date.txt
+
+
+Inode: 525052
+File Permissions: r--r--r--
+Size: 4167 bytes
+Last Modification Time: Sun Apr  7 03:16:24 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
+Parent Folder: DIRECTOR2/..
+Filename: lista.c
+
+
+Inode: 524702
+File Permissions: rw-rw-r--
+Size: 0 bytes
+Last Modification Time: Mon Apr 15 00:31:56 2024
+Last Access Time: Mon Apr 15 00:31:56 2024
+Parent Folder: DIRECTOR3/..
+Filename: anaremere.txt
 
 
 Inode: 524764
 File Permissions: rwxrwxrwx
 Size: 6316 bytes
 Last Modification Time: Sun Jan 22 14:09:31 2023
-Last Access Time: Sun Apr  7 00:41:59 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
 Parent Folder: DIRECTOR3/..
 Filename: biti.c
 
@@ -209,7 +191,7 @@ Inode: 524767
 File Permissions: rwxrwxrwx
 Size: 40000 bytes
 Last Modification Time: Thu Jun 13 19:28:14 2019
-Last Access Time: Sun Apr  7 00:43:45 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
 Parent Folder: DIRECTOR3/..
 Filename: integers.bin
 
@@ -218,7 +200,7 @@ Inode: 524766
 File Permissions: rwxrwxrwx
 Size: 84 bytes
 Last Modification Time: Sun Jan 22 23:27:21 2023
-Last Access Time: Sun Apr  7 00:41:49 2024
+Last Access Time: Sun Apr 14 02:17:37 2024
 Parent Folder: DIRECTOR3/..
 Filename: file.csv
 

@@ -11,9 +11,9 @@
 #include <sys/types.h>
 #include <stdarg.h>
 
-
 #define PATH_LENGTH 1000
 #define file_out "comparisons.txt"
+#define SNAPSHOT_DIR "SNAPSHOTS" 
 
 typedef struct 
 {
@@ -159,6 +159,53 @@ int readSnapshot(const char *snapshot_path)
     return 1;
 }
 
+int searchOverwriteSS(ino_t inode, const char *newFilename, const char *prevName) 
+{
+    DIR *dir;
+    struct dirent *ss_file;
+
+    dir = opendir(SNAPSHOT_DIR);
+    if (dir == NULL) 
+    {
+        perror("error opening SS folder\n");
+        exit(EXIT_FAILURE);
+    }
+
+    while ((ss_file = readdir(dir)) != NULL) 
+    {
+        if (strcmp(ss_file->d_name, ".") == 0 || strcmp(ss_file->d_name, "..") == 0)
+        {
+            continue;
+        }
+        char snapshotPath[PATH_LENGTH];
+        snprintf(snapshotPath, sizeof(snapshotPath), "%s/%s", SNAPSHOT_DIR, ss_file->d_name);
+        
+        if (readSnapshot(snapshotPath)) 
+        {
+            if (inode == myPreviousInfo.st_ino) 
+            {
+                fprintf(f, "Snapshot with the same inode(%ld) already exists for file: %s (prev: %s)\n\n", inode, newFilename, prevName);
+
+                char ss_name[100] = "/home/user/SO/PROIECT/SNAPSHOTS/";
+                strcat(ss_name, prevName);
+                strcat(ss_name, ".ss");
+                if (remove(ss_name) == 0) 
+                {
+                    printf("File '%s' deleted successfully.\n", ss_name);
+                } 
+                else 
+                {
+                    perror("Error deleting file");
+                }
+
+                return 1;
+            }
+        }
+    }
+    return 0;
+    closedir(dir);
+}
+
 
 // Compare previous vs current version
 int comparePrevVsCurr(const char *path)
@@ -209,6 +256,7 @@ int comparePrevVsCurr(const char *path)
 
     return counter;
 }
+
 
 // Process the directory and call the subdirectories
 void parseDir(const char *dir_name, const char *snapshots_dir) 
@@ -264,7 +312,15 @@ void parseDir(const char *dir_name, const char *snapshots_dir)
             int snapshotStatus = readSnapshot(snapshot_path);
             if (snapshotStatus == 0) 
             {
-                writeSnapshot(snapshot_path);
+                if(searchOverwriteSS(file_stat.st_ino, myCurrentInfo.filename, myPreviousInfo.filename) != 0)
+                {
+                    writeSnapshot(snapshot_path);
+                }
+                else
+                {
+                    fprintf(f, "file %s added", myCurrentInfo.filename);
+                    writeSnapshot(snapshot_path);
+                }
             } 
             else 
             {
@@ -328,7 +384,6 @@ int main(int argc, char *argv[])
             parseDir(input_directory, snapshots_dir);
         }
     }
-    
 
     fclose(info_file);
     fclose(f);
