@@ -1,14 +1,10 @@
-524764 - 524764
-Folder: DIRECTOR3/.., File: biti.c - Same amount of data
+Snapshot with the same inode(536262) already exists for file: mere.txt (prev: ana.txt)
 
 524767 - 524767
 Folder: DIRECTOR3/.., File: integers.bin - Same amount of data
 
 524766 - 524766
 Folder: DIRECTOR3/.., File: file.csv - Same amount of data
-
-524702 - 524702
-Folder: DIRECTOR3/.., File: ana.txt - Same amount of data
 
 524744 - 524744
 Folder: DIRECTOR2/subdir/.., File: back.c - Same amount of data
@@ -17,9 +13,9 @@ Folder: DIRECTOR2/subdir/.., File: back.c - Same amount of data
 Folder: DIRECTOR2/subdir/.., File: hardcoding.c - Same amount of data
 
 524761 - 524761
-Folder: DIRECTOR2/subdir/.., File: aux.txt - Same amount of data
+Folder: DIRECTOR2/subdir/subsub/.., File: aux.txt - Same amount of data
 
-524762 - 524762
+524702 - 524702
 Folder: DIRECTOR2/subdir/subsub/.., File: fisbin.c - Same amount of data
 
 535437 - 535437

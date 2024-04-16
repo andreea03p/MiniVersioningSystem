@@ -217,18 +217,18 @@ int comparePrevVsCurr(const char *path)
         counter++;
     }
 
-    if(myCurrentInfo.st_mtime != myPreviousInfo.st_mtime && myCurrentInfo.st_ino == myPreviousInfo.st_ino)
+    if(myCurrentInfo.st_mtime != myPreviousInfo.st_mtime)
     {
         fprintf(comp_file, "Folder: %s, File: %s was modified in the meantime\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
         counter++;
     }
 
-    if (myCurrentInfo.st_size < myPreviousInfo.st_size && myCurrentInfo.st_ino == myPreviousInfo.st_ino)
+    if (myCurrentInfo.st_size < myPreviousInfo.st_size)
     {
         fprintf(comp_file, "Folder: %s, File: %s - Some data was removed\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
         counter++;
     }
-    else if (myCurrentInfo.st_size > myPreviousInfo.st_size && myCurrentInfo.st_ino == myPreviousInfo.st_ino)
+    else if (myCurrentInfo.st_size > myPreviousInfo.st_size)
     {
         fprintf(comp_file, "Folder: %s, File: %s - Some data was added\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
         counter++;
@@ -239,13 +239,13 @@ int comparePrevVsCurr(const char *path)
         counter++;
     }
 
-    if(strcmp(myCurrentInfo.parent_folder, myPreviousInfo.parent_folder ) != 0 && myCurrentInfo.st_ino == myPreviousInfo.st_ino)
+    if(strcmp(myCurrentInfo.parent_folder, myPreviousInfo.parent_folder) != 0 && myCurrentInfo.st_ino == myPreviousInfo.st_ino)
     {
         fprintf(comp_file, "File: %s was moved from %s TO %s\n", myCurrentInfo.filename, myPreviousInfo.parent_folder, myCurrentInfo.parent_folder);
         counter++;
     }
 
-    if(myCurrentInfo.st_mode != myPreviousInfo.st_mode && myCurrentInfo.st_ino == myPreviousInfo.st_ino)
+    if(myCurrentInfo.st_mode != myPreviousInfo.st_mode)
     {
         fprintf(comp_file, "File: %s; permissions were changed from %s TO %s\n", myCurrentInfo.filename, mode_to_symbolic(myPreviousInfo.st_mode), mode_to_symbolic(myCurrentInfo.st_mode));
     }
