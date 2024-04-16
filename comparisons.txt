@@ -1,28 +1,14 @@
-536463 - 536463
-Folder: DIRECTOR1/subdir/.., File: sub1.java - Same amount of data
+524764 - 524764
+Folder: DIRECTOR3/.., File: biti.c - Same amount of data
 
-536684 - 536684
-Folder: DIRECTOR1/subdir/.., File: ceva.c - Same amount of data
+524767 - 524767
+Folder: DIRECTOR3/.., File: integers.bin - Same amount of data
 
-536464 - 536464
-Folder: DIRECTOR1/subdir/.., File: sub2.py - Same amount of data
+524766 - 524766
+Folder: DIRECTOR3/.., File: file.csv - Same amount of data
 
-536730 - 536730
-Folder: DIRECTOR1/subdir/.., File: hello.c - Same amount of data
-
-536458 - 536458
-Folder: DIRECTOR1/.., File: whatever.txt - Same amount of data
-
-536465 - 536465
-Folder: DIRECTOR1/.., File: prob.sh - Same amount of data
-
-536457 - 536457
-Folder: DIRECTOR1/.., File: fisier.txt - Same amount of data
-
-Snapshot with the same inode(536468) already exists for file: kate.txt (prev: 22.txt)
-
-536553 - 536553
-Folder: DIRECTOR1/subdir2/.., File: crazy.c - Same amount of data
+524702 - 524702
+Folder: DIRECTOR3/.., File: ana.txt - Same amount of data
 
 524744 - 524744
 Folder: DIRECTOR2/subdir/.., File: back.c - Same amount of data
@@ -36,27 +22,36 @@ Folder: DIRECTOR2/subdir/.., File: aux.txt - Same amount of data
 524762 - 524762
 Folder: DIRECTOR2/subdir/subsub/.., File: fisbin.c - Same amount of data
 
+535437 - 535437
+Folder: DIRECTOR2/subdir/.., File: prob.c - Same amount of data
+
 534879 - 534879
 Folder: DIRECTOR2/.., File: caractere.c - Same amount of data
 
-524858 - 524858
-Folder: DIRECTOR2/.., File: fgfgsrg.txt - Same amount of data
-
 524983 - 524983
-Folder: DIRECTOR2/.., File: date.txt - Same amount of data
+Folder: DIRECTOR2/.., File: data.txt - Same amount of data
 
-525052 - 525052
-Folder: DIRECTOR2/.., File: lista.c - Same amount of data
+536463 - 536463
+Folder: DIRECTOR1/subdir/.., File: sub1.java - Same amount of data
 
-524702 - 524702
-Folder: DIRECTOR3/.., File: anaremere.txt - Same amount of data
+536464 - 536464
+Folder: DIRECTOR1/subdir/.., File: sub2.py - Same amount of data
 
-524764 - 524764
-Folder: DIRECTOR3/.., File: biti.c - Same amount of data
+536457 - 536457
+Folder: DIRECTOR1/subdir/.., File: fisier.txt - Same amount of data
 
-524767 - 524767
-Folder: DIRECTOR3/.., File: integers.bin - Same amount of data
+536730 - 536730
+Folder: DIRECTOR1/subdir/.., File: hello.c - Same amount of data
 
-524766 - 524766
-Folder: DIRECTOR3/.., File: file.csv - Same amount of data
+536458 - 536458
+Folder: DIRECTOR1/.., File: whatever.txt - Same amount of data
+
+536465 - 536465
+Folder: DIRECTOR1/.., File: prob.sh - Same amount of data
+
+536468 - 536468
+Folder: DIRECTOR1/subdir2/.., File: kate.txt - Same amount of data
+
+534869 - 534869
+Folder: DIRECTOR1/subdir2/.., File: crazy.c - Same amount of data
 

@@ -10,9 +10,12 @@
 #include <time.h>
 #include <sys/types.h>
 #include <stdarg.h>
+#include<sys/wait.h>
+
 
 #define PATH_LENGTH 1000
-#define file_out "comparisons.txt"
+#define comp_out "comparisons.txt"
+#define info_out "info.txt"
 #define SNAPSHOT_DIR "SNAPSHOTS" 
 
 typedef struct 
@@ -30,7 +33,7 @@ typedef struct
 FileInfo myCurrentInfo;
 FileInfo myPreviousInfo;
 struct stat file_stat;
-FILE *f;
+FILE *comp_file;
 FILE *info_file;
 
 
@@ -63,35 +66,30 @@ char* mode_to_symbolic(mode_t mode)
 void printFileInfoToFile(const FileInfo *info, FILE *file)
 {
     fprintf(file, "Inode: %ld\n", info->st_ino);
+    fprintf(file, "Filename: %s\n", info->filename);
+    fprintf(file, "Parent Folder: %s\n", info->parent_folder);
     char *permissions = mode_to_symbolic(info->st_mode);
     fprintf(file, "File Permissions: %s\n", permissions);
     free(permissions);
     fprintf(file, "Size: %ld bytes\n", info->st_size);
     fprintf(file, "Last Modification Time: %s", ctime(&info->st_mtime));
     fprintf(file, "Last Access Time: %s", ctime(&info->st_atime));
-    fprintf(file, "Parent Folder: %s\n", info->parent_folder);
-    fprintf(file, "Filename: %s\n", info->filename);
     fprintf(file, "\n\n");
 }
 
 
 int isDirectory(const char *path) 
 {
-   struct stat statbuf;
-   if (stat(path, &statbuf) != 0)
-   {
-       return 0;
-   }
-   return S_ISDIR(statbuf.st_mode);
+    struct stat statbuf;
+    return stat(path, &statbuf) == 0 && S_ISDIR(statbuf.st_mode);
 }
 
-int isRegularFile(const char *path)
+int isRegularFile(const char *path) 
 {
     struct stat path_stat;
-    stat(path, &path_stat);
-    
-    return S_ISREG(path_stat.st_mode);
+    return stat(path, &path_stat) == 0 && S_ISREG(path_stat.st_mode);
 }
+
 
 // int isSymbolicLink(const char *path) 
 // {
@@ -184,7 +182,7 @@ int searchOverwriteSS(ino_t inode, const char *newFilename, const char *prevName
         {
             if (inode == myPreviousInfo.st_ino) 
             {
-                fprintf(f, "Snapshot with the same inode(%ld) already exists for file: %s (prev: %s)\n\n", inode, newFilename, prevName);
+                fprintf(comp_file, "Snapshot with the same inode(%ld) already exists for file: %s (prev: %s)\n\n", inode, newFilename, prevName);
 
                 char ss_name[100] = "/home/user/SO/PROIECT/SNAPSHOTS/";
                 strcat(ss_name, prevName);
@@ -212,47 +210,47 @@ int comparePrevVsCurr(const char *path)
 {
     int counter = 0;
 
-    fprintf(f, "%ld - %ld\n",myPreviousInfo.st_ino, myCurrentInfo.st_ino);
-    if(myCurrentInfo.st_atime != myPreviousInfo.st_atime)
+    fprintf(comp_file, "%ld - %ld\n",myPreviousInfo.st_ino, myCurrentInfo.st_ino);
+    if(myCurrentInfo.st_atime != myPreviousInfo.st_atime && myCurrentInfo.st_ino == myPreviousInfo.st_ino)
     {
-        fprintf(f, "Folder: %s, File: %s was accessed in the meantime\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
+        fprintf(comp_file, "Folder: %s, File: %s was accessed in the meantime\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
         counter++;
     }
 
-    if(myCurrentInfo.st_mtime != myPreviousInfo.st_mtime)
+    if(myCurrentInfo.st_mtime != myPreviousInfo.st_mtime && myCurrentInfo.st_ino == myPreviousInfo.st_ino)
     {
-        fprintf(f, "Folder: %s, File: %s was modified in the meantime\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
+        fprintf(comp_file, "Folder: %s, File: %s was modified in the meantime\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
         counter++;
     }
 
-    if (myCurrentInfo.st_size < myPreviousInfo.st_size)
+    if (myCurrentInfo.st_size < myPreviousInfo.st_size && myCurrentInfo.st_ino == myPreviousInfo.st_ino)
     {
-        fprintf(f, "Folder: %s, File: %s - Some data was removed\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
+        fprintf(comp_file, "Folder: %s, File: %s - Some data was removed\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
         counter++;
     }
-    else if (myCurrentInfo.st_size > myPreviousInfo.st_size)
+    else if (myCurrentInfo.st_size > myPreviousInfo.st_size && myCurrentInfo.st_ino == myPreviousInfo.st_ino)
     {
-        fprintf(f, "Folder: %s, File: %s - Some data was added\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
+        fprintf(comp_file, "Folder: %s, File: %s - Some data was added\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
         counter++;
     }
     else
     {
-        fprintf(f, "Folder: %s, File: %s - Same amount of data\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
+        fprintf(comp_file, "Folder: %s, File: %s - Same amount of data\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
         counter++;
     }
 
-    if(strcmp(myCurrentInfo.parent_folder, myPreviousInfo.parent_folder) != 0)
+    if(strcmp(myCurrentInfo.parent_folder, myPreviousInfo.parent_folder ) != 0 && myCurrentInfo.st_ino == myPreviousInfo.st_ino)
     {
-        fprintf(f, "File: %s was moved from %s TO %s\n", myCurrentInfo.filename, myPreviousInfo.parent_folder, myCurrentInfo.parent_folder);
+        fprintf(comp_file, "File: %s was moved from %s TO %s\n", myCurrentInfo.filename, myPreviousInfo.parent_folder, myCurrentInfo.parent_folder);
         counter++;
     }
 
-    if(myCurrentInfo.st_mode != myPreviousInfo.st_mode)
+    if(myCurrentInfo.st_mode != myPreviousInfo.st_mode && myCurrentInfo.st_ino == myPreviousInfo.st_ino)
     {
-        fprintf(f, "File: %s; permissions were changed from %s TO %s\n", myCurrentInfo.filename, mode_to_symbolic(myPreviousInfo.st_mode), mode_to_symbolic(myCurrentInfo.st_mode));
+        fprintf(comp_file, "File: %s; permissions were changed from %s TO %s\n", myCurrentInfo.filename, mode_to_symbolic(myPreviousInfo.st_mode), mode_to_symbolic(myCurrentInfo.st_mode));
     }
 
-    fprintf(f, "\n");
+    fprintf(comp_file, "\n");
 
     return counter;
 }
@@ -285,8 +283,8 @@ void parseDir(const char *dir_name, const char *snapshots_dir)
         
         if (isRegularFile(path)) 
         {
+            // Create fornatted path for .ss
             char snapshot_path[PATH_LENGTH];
-            // create .ss buffer
             snprintf(snapshot_path, PATH_LENGTH, "%s/%s.ss", snapshots_dir, file->d_name);
             
             if (stat(path, &file_stat) == -1) 
@@ -312,15 +310,11 @@ void parseDir(const char *dir_name, const char *snapshots_dir)
             int snapshotStatus = readSnapshot(snapshot_path);
             if (snapshotStatus == 0) 
             {
-                if(searchOverwriteSS(file_stat.st_ino, myCurrentInfo.filename, myPreviousInfo.filename) != 0)
+                if(searchOverwriteSS(file_stat.st_ino, myCurrentInfo.filename, myPreviousInfo.filename) == 0)
                 {
-                    writeSnapshot(snapshot_path);
+                    fprintf(comp_file, "file %s added\n\n", myCurrentInfo.filename);
                 }
-                else
-                {
-                    fprintf(f, "file %s added", myCurrentInfo.filename);
-                    writeSnapshot(snapshot_path);
-                }
+                writeSnapshot(snapshot_path);
             } 
             else 
             {
@@ -387,53 +381,93 @@ void checkDeleted(const char *dir_name, const char *filename, int *ok)
 }
 
 
+void process_directory(const char *input_dir, const char *snapshots_dir) 
+{
+    // Create a child process
+    pid_t pid = fork();
+    if (pid == 0) 
+    {
+        if (isDirectory(input_dir) && isDirectory(snapshots_dir)) 
+        {
+            //execlp("./p", "parseDir", input_directory, snapshots_dir, NULL);
+            //perror("error exec");
+            //exit(EXIT_FAILURE);
+            parseDir(input_dir, snapshots_dir);
+            printf("Snapshot for Directory %s created successfully.\n", input_dir);
+            exit(EXIT_SUCCESS);
+        } 
+        else 
+        {
+            perror("invalid in/out directories\n");
+            exit(EXIT_FAILURE);
+        }
+    } 
+    else if (pid < 0) 
+    {
+        perror("fork");
+    }
+}
 
 int main(int argc, char *argv[]) 
 {
-    if (argc < 4 || argc > 12)
+    if (argc < 4 || argc > 12) 
     {
         perror("Usage: ./program -o <output_directory> <input_directories>\n");
         exit(EXIT_FAILURE);
     }
 
-    f = fopen(file_out, "w");
-    if(f == NULL)
+    comp_file = fopen(comp_out, "w");
+    if(comp_file == NULL) 
     {
-        perror("error opening file to write comparisons\n");
+        perror("Error opening file to write comparisons\n");
         exit(EXIT_FAILURE);
     }
-    
-    info_file = fopen("info.txt", "w");
-    if (info_file == NULL)
+
+    info_file = fopen(info_out, "w");
+    if (info_file == NULL) 
     {
         perror("Error opening output info file\n");
         return 1;
     }
-    
 
     const char *snapshots_dir = argv[2];
 
-    for(int i = 3; i < argc; i++)
+    int child_count = 0;
+    for (int i = 3; i < argc; i++) 
     {
-        const char *input_directory = argv[i];
-        if(isDirectory(input_directory) && isDirectory(snapshots_dir))
+        const char *input_dir= argv[i];
+        process_directory(input_dir, snapshots_dir);
+        child_count++;
+    }
+
+    int status;
+    pid_t child_pid;
+    for (int i = 0; i < child_count; i++) 
+    {
+        child_pid = wait(&status);
+        if (WIFEXITED(status)) 
         {
-            parseDir(input_directory, snapshots_dir);
+            printf("Child Process %d terminated with PID %d and exit code %d.\n", i + 1, child_pid, WEXITSTATUS(status));
+        } 
+        else 
+        {
+            printf("Child Process %d terminated with PID %d and errors.\n", i + 1, child_pid);
         }
     }
 
 
-    //Check if deleted files by snapshots
+    //Check if there are deleted files by snapshots name
+    printf("\n\n");
     int ok = 0;
-    DIR *snapshot_dir = opendir(SNAPSHOT_DIR);
-    if (snapshot_dir == NULL) 
+    DIR *ss_dir = opendir(snapshots_dir);
+    if (ss_dir == NULL) 
     {
-        perror("Error opening snapshot folder");
+        perror("Error opening snapshots folder");
         exit(EXIT_FAILURE);
     }
 
     struct dirent *snapshot_file;
-    while ((snapshot_file = readdir(snapshot_dir)) != NULL) 
+    while ((snapshot_file = readdir(ss_dir)) != NULL) 
     {
         if (strcmp(snapshot_file->d_name, ".") == 0 || strcmp(snapshot_file->d_name, "..") == 0) 
         {
@@ -461,7 +495,9 @@ int main(int argc, char *argv[])
         }
     }
 
-    closedir(snapshot_dir);
+    closedir(ss_dir);
+    fclose(comp_file);
+    fclose(info_file);
 
     return 0;
 }
