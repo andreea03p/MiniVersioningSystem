@@ -1,4 +1,6 @@
-Snapshot with the same inode(536262) already exists for file: mere.txt (prev: ana.txt)
+536262 - 536262
+Folder: DIRECTOR3/.., File: mere.txt - Same amount of data
+File: mere.txt; permissions were changed from --------- TO r--r--r--
 
 524767 - 524767
 Folder: DIRECTOR3/.., File: integers.bin - Same amount of data
@@ -40,6 +42,7 @@ Folder: DIRECTOR1/subdir/.., File: fisier.txt - Same amount of data
 Folder: DIRECTOR1/subdir/.., File: hello.c - Same amount of data
 
 536458 - 536458
+Folder: DIRECTOR1/.., File: whatever.txt was accessed in the meantime
 Folder: DIRECTOR1/.., File: whatever.txt - Same amount of data
 
 536465 - 536465

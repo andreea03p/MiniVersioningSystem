@@ -1,10 +1,10 @@
 Inode: 536262
 Filename: mere.txt
 Parent Folder: DIRECTOR3/..
-File Permissions: rw-rw-r--
+File Permissions: r--r--r--
 Size: 13 bytes
 Last Modification Time: Tue Apr 16 21:51:24 2024
-Last Access Time: Tue Apr 16 21:51:24 2024
+Last Access Time: Tue Apr 16 21:53:06 2024
 
 
 Inode: 524767
@@ -58,7 +58,7 @@ Parent Folder: DIRECTOR2/subdir/subsub/..
 File Permissions: rwxrwxrwx
 Size: 9338 bytes
 Last Modification Time: Tue Apr 16 21:51:37 2024
-Last Access Time: Tue Apr 16 21:51:37 2024
+Last Access Time: Tue Apr 16 21:53:06 2024
 
 
 Inode: 535437
@@ -97,6 +97,9 @@ Last Modification Time: Sun Mar 31 00:01:05 2024
 Last Access Time: Sun Apr 14 02:17:37 2024
 
 
+The symbolic link DIRECTOR1/subdir/s1 points to: fisier.txt
+
+
 Inode: 536464
 Filename: sub2.py
 Parent Folder: DIRECTOR1/subdir/..
@@ -130,7 +133,10 @@ Parent Folder: DIRECTOR1/..
 File Permissions: rwxrwxrwx
 Size: 13 bytes
 Last Modification Time: Sun Mar 31 00:01:05 2024
-Last Access Time: Sun Apr 14 02:17:37 2024
+Last Access Time: Mon Apr 29 00:50:26 2024
+
+
+The symbolic link DIRECTOR1/s points to: whatever.txt
 
 
 Inode: 536465
