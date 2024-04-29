@@ -17,6 +17,9 @@
 #define comp_out "comparisons.txt"
 #define info_out "info.txt"
 #define SNAPSHOT_DIR "SNAPSHOTS" 
+#define PATH_TO_SCRIPT "/home/user/SO/PROIECT/verify_malicious.sh"
+#define PATH_TO_SSDIR "/home/user/SO/PROIECT/SNAPSHOTS/"
+#define PATH_TO_ISOLATEDIR "/home/user/SO/PROIECT/ISOLATED/"
 
 typedef struct 
 {
@@ -63,13 +66,31 @@ char* mode_to_symbolic(mode_t mode)
 }
 
 
-int checkPermissions(const char *permissions)
+void checkPermissions(const char *permissions, const char *file_path)
 {
-    if(strcmp(permissions, "---------"))
+    if(strcmp(permissions, "---------") == 0)
     {
-        return 1;
+        pid_t pid = fork();
+        
+        if (pid == -1) 
+        {
+            perror("fork");
+            exit(EXIT_FAILURE);
+        }
+        
+        if (pid == 0) 
+        {
+            // Child process
+            execl(PATH_TO_SCRIPT, "verify_malicious.sh", file_path, PATH_TO_ISOLATEDIR, NULL);
+            perror("execl");
+            exit(EXIT_FAILURE);
+        } 
+        else 
+        {
+            // Parent process
+            wait(NULL); // Wait for the child process to finish
+        }
     }
-    return 0;
 }
 
 
@@ -195,7 +216,7 @@ int searchOverwriteSS(ino_t inode, const char *newFilename, const char *prevName
             {
                 fprintf(comp_file, "Snapshot with the same inode(%ld) already exists for file: %s (previous file name: %s)\n\n", inode, newFilename, prevName);
 
-                char ss_name[100] = "/home/user/SO/PROIECT/SNAPSHOTS/";
+                char ss_name[100] = PATH_TO_SSDIR;
                 strcat(ss_name, prevName);
                 strcat(ss_name, ".ss");
                 if (remove(ss_name) == 0) 
@@ -268,7 +289,7 @@ int comparePrevVsCurr(const char *path)
 
 
 // Process the directory and call the subdirectories
-void parseDir(const char *dir_name, const char *snapshots_dir) 
+void parseDir(const char *dir_name, const char *snapshots_dir, const char *isolate_dir) 
 {
     DIR *dir;
     struct dirent *file;
@@ -318,7 +339,7 @@ void parseDir(const char *dir_name, const char *snapshots_dir)
             
             printFileInfoToFile(&myCurrentInfo, info_file);
 
-            printf("\n%d\n", checkPermissions(mode_to_symbolic(myCurrentInfo.st_mode)));
+            checkPermissions(mode_to_symbolic(myCurrentInfo.st_mode), path);
             
             int snapshotStatus = readSnapshot(snapshot_path);
             if (snapshotStatus == 0) 
@@ -362,7 +383,7 @@ void parseDir(const char *dir_name, const char *snapshots_dir)
 
         if (isDirectory(path)) 
         {
-            parseDir(path, snapshots_dir);
+            parseDir(path, snapshots_dir, isolate_dir);
         }
     }
 
@@ -406,7 +427,7 @@ void checkDeleted(const char *dir_name, const char *filename, int *ok)
 }
 
 
-void process_directory(const char *input_dir, const char *snapshots_dir) 
+void process_directory(const char *input_dir, const char *snapshots_dir, const char *isolate_dir) 
 {
     // Create a child process
     pid_t pid = fork();
@@ -417,7 +438,7 @@ void process_directory(const char *input_dir, const char *snapshots_dir)
             //execlp("./p", "parseDir", input_directory, snapshots_dir, NULL);
             //perror("error exec");
             //exit(EXIT_FAILURE);
-            parseDir(input_dir, snapshots_dir);
+            parseDir(input_dir, snapshots_dir, isolate_dir);
             printf("Snapshot for Directory %s created successfully.\n", input_dir);
             exit(EXIT_SUCCESS);
         } 
@@ -456,13 +477,13 @@ int main(int argc, char *argv[])
     }
 
     const char *snapshots_dir = argv[2];
-    const char *isolated_dir = argv[4];
+    const char *isolate_dir = argv[4];
 
     int child_count = 0;
     for (int i = 5; i < argc; i++) 
     {
         const char *input_dir= argv[i];
-        process_directory(input_dir, snapshots_dir);
+        process_directory(input_dir, snapshots_dir,isolate_dir);
         child_count++;
     }
 

@@ -4,7 +4,7 @@ Parent Folder: DIRECTOR3/..
 File Permissions: r--r--r--
 Size: 13 bytes
 Last Modification Time: Tue Apr 16 21:51:24 2024
-Last Access Time: Tue Apr 16 21:53:06 2024
+Last Access Time: Mon Apr 29 00:51:36 2024
 
 
 Inode: 524767
@@ -28,7 +28,7 @@ Last Access Time: Sun Apr 14 02:17:37 2024
 Inode: 524744
 Filename: back.c
 Parent Folder: DIRECTOR2/subdir/..
-File Permissions: rwxrwxrwx
+File Permissions: r--r--r--
 Size: 2006 bytes
 Last Modification Time: Thu Jan 18 21:58:12 2024
 Last Access Time: Sun Apr 14 02:17:37 2024
@@ -109,13 +109,13 @@ Last Modification Time: Sun Mar 31 00:01:05 2024
 Last Access Time: Sun Apr 14 02:17:37 2024
 
 
-Inode: 536457
+Inode: 543170
 Filename: fisier.txt
 Parent Folder: DIRECTOR1/subdir/..
-File Permissions: rwxrwxrwx
+File Permissions: ---------
 Size: 917 bytes
-Last Modification Time: Sun Mar 31 00:01:05 2024
-Last Access Time: Tue Apr 16 21:42:34 2024
+Last Modification Time: Tue Apr 30 00:58:58 2024
+Last Access Time: Tue Apr 30 01:41:06 2024
 
 
 Inode: 536730
@@ -145,7 +145,7 @@ Parent Folder: DIRECTOR1/..
 File Permissions: rwxrwxrwx
 Size: 520 bytes
 Last Modification Time: Sun Mar 31 00:01:05 2024
-Last Access Time: Mon Apr 15 00:58:31 2024
+Last Access Time: Tue Apr 30 00:57:44 2024
 
 
 Inode: 536468
@@ -155,14 +155,5 @@ File Permissions: rwxrwxrwx
 Size: 532 bytes
 Last Modification Time: Sun Mar 31 00:01:05 2024
 Last Access Time: Mon Apr 15 01:59:11 2024
-
-
-Inode: 534869
-Filename: crazy.c
-Parent Folder: DIRECTOR1/subdir2/..
-File Permissions: rwxrwxrwx
-Size: 1100 bytes
-Last Modification Time: Tue Apr 16 21:21:29 2024
-Last Access Time: Tue Apr 16 21:42:34 2024
 
 

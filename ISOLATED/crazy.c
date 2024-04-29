@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+risk
+
 typedef struct number
 {
     int value;
