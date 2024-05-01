@@ -7,26 +7,8 @@ Folder: DIRECTOR3/.., File: integers.bin - Same amount of data
 524766 - 524766
 Folder: DIRECTOR3/.., File: file.csv - Same amount of data
 
-524744 - 524744
-Folder: DIRECTOR2/subdir/.., File: back.c - Same amount of data
-
-524763 - 524763
-Folder: DIRECTOR2/subdir/.., File: hardcoding.c - Same amount of data
-
-524761 - 524761
-Folder: DIRECTOR2/subdir/subsub/.., File: aux.txt - Same amount of data
-
-524702 - 524702
-Folder: DIRECTOR2/subdir/subsub/.., File: fisbin.c - Same amount of data
-
-535437 - 535437
-Folder: DIRECTOR2/subdir/.., File: prob.c - Same amount of data
-
-534879 - 534879
-Folder: DIRECTOR2/.., File: caractere.c - Same amount of data
-
-524983 - 524983
-Folder: DIRECTOR2/.., File: data.txt - Same amount of data
+534879 - 530005
+Folder: DIRECTOR3/.., File: caractere.c - Same amount of data
 
 536463 - 536463
 Folder: DIRECTOR1/subdir/.., File: sub1.java - Same amount of data
@@ -37,9 +19,6 @@ Folder: DIRECTOR1/subdir/.., File: sub2.py - Same amount of data
 543170 - 543170
 Folder: DIRECTOR1/subdir/.., File: fisier.txt - Same amount of data
 
-536730 - 536730
-Folder: DIRECTOR1/subdir/.., File: hello.c - Same amount of data
-
 536458 - 536458
 Folder: DIRECTOR1/.., File: whatever.txt - Same amount of data
 
@@ -47,5 +26,30 @@ Folder: DIRECTOR1/.., File: whatever.txt - Same amount of data
 Folder: DIRECTOR1/.., File: prob.sh - Same amount of data
 
 536468 - 536468
-Folder: DIRECTOR1/subdir2/.., File: kate.txt - Same amount of data
+Folder: DIRECTOR1/subdir2/.., File: py.txt - Same amount of data
+
+536730 - 536730
+Folder: DIRECTOR1/subdir2/.., File: hello.c - Same amount of data
+
+524744 - 524744
+Folder: DIRECTOR2/subdir/.., File: back.c - Same amount of data
+
+524763 - 524763
+Folder: DIRECTOR2/subdir/.., File: hardcoding.c - Same amount of data
+
+530005 - 534879
+Folder: DIRECTOR2/subdir/.., File: caractere.c - Same amount of data
+
+524761 - 524761
+Folder: DIRECTOR2/subdir/subsub/.., File: aux.txt - Same amount of data
+
+524702 - 524702
+Folder: DIRECTOR2/subdir/subsub/.., File: fisbin.c - Same amount of data
+
+535437 - 535437
+Folder: DIRECTOR2/subdir/.., File: prob.c - Same amount of data
+
+524983 - 524983
+Folder: DIRECTOR2/.., File: data.txt was accessed in the meantime
+Folder: DIRECTOR2/.., File: data.txt - Same amount of data
 

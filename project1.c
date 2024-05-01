@@ -391,42 +391,6 @@ void parseDir(const char *dir_name, const char *snapshots_dir, const char *isola
 }
 
 
-void checkDeleted(const char *dir_name, const char *filename, int *ok) 
-{
-    DIR *dir = opendir(dir_name);
-    if (dir == NULL) 
-    {
-        perror("Error opening directory");
-        return;
-    }
-    
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != NULL) 
-    {
-        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-        {
-            continue;
-        }
-
-        char path[PATH_LENGTH];
-        snprintf(path, sizeof(path), "%s/%s", dir_name, entry->d_name);
-
-        if (strcmp(entry->d_name, filename) == 0 && isRegularFile(path)) 
-        {
-            printf("File '%s' exists in directory '%s'\n", filename, dir_name);
-            *ok = 1;
-            return;
-        }
-
-        if (isDirectory(path)) 
-        {
-            checkDeleted(path, filename, ok);
-        }
-    }
-    closedir(dir);
-}
-
-
 void process_directory(const char *input_dir, const char *snapshots_dir, const char *isolate_dir) 
 {
     // Create a child process
@@ -453,6 +417,86 @@ void process_directory(const char *input_dir, const char *snapshots_dir, const c
         perror("fork");
     }
 }
+
+
+void checkDeleted(const char *dir_name, const char *filename, int *ok) 
+{
+    DIR *dir = opendir(dir_name);
+    if (dir == NULL) 
+    {
+        perror("Error opening directory");
+        return;
+    }
+    
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) 
+    {
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+        {
+            continue;
+        }
+
+        char path[PATH_LENGTH];
+        snprintf(path, sizeof(path), "%s/%s", dir_name, entry->d_name);
+
+        if (strcmp(entry->d_name, filename) == 0 && isRegularFile(path)) 
+        {
+            printf("\nFile '%s' exists in directory '%s'\n", filename, dir_name);
+            *ok = 1;
+            return;
+        }
+
+        if (isDirectory(path)) 
+        {
+            checkDeleted(path, filename, ok);
+        }
+    }
+    closedir(dir);
+}
+
+
+void searchFiles(const char *snapshots_dir, int nrArg, char *args[])
+{
+    printf("\n\n");
+    int ok = 0;
+    DIR *ss_dir = opendir(snapshots_dir);
+    if (ss_dir == NULL) 
+    {
+        perror("Error opening snapshots folder");
+        exit(EXIT_FAILURE);
+    }
+
+    struct dirent *snapshot_file;
+    while ((snapshot_file = readdir(ss_dir)) != NULL) 
+    {
+        if (strcmp(snapshot_file->d_name, ".") == 0 || strcmp(snapshot_file->d_name, "..") == 0) 
+        {
+            continue;
+        }
+
+        char f_name[100] = "";
+        strncpy(f_name, snapshot_file->d_name, strlen(snapshot_file->d_name) - 3);
+        f_name[strlen(snapshot_file->d_name) - 3] = '\0';
+
+        ok = 0;
+        for (int i = 5; i < nrArg; i++) 
+        {
+            const char *input_directory = args[i];
+            if (isDirectory(input_directory)) 
+            {
+                checkDeleted(input_directory, f_name, &ok);
+            }
+        }
+        
+        if(ok == 0)
+        {
+           printf("\nFile '%s' does not exist\n", f_name);     
+        }
+    }
+
+    closedir(ss_dir);
+}
+
 
 int main(int argc, char *argv[]) 
 {
@@ -502,47 +546,9 @@ int main(int argc, char *argv[])
         }
     }
 
-
     //Check if there are deleted files by snapshots name
-    printf("\n\n");
-    int ok = 0;
-    DIR *ss_dir = opendir(snapshots_dir);
-    if (ss_dir == NULL) 
-    {
-        perror("Error opening snapshots folder");
-        exit(EXIT_FAILURE);
-    }
-
-    struct dirent *snapshot_file;
-    while ((snapshot_file = readdir(ss_dir)) != NULL) 
-    {
-        if (strcmp(snapshot_file->d_name, ".") == 0 || strcmp(snapshot_file->d_name, "..") == 0) 
-        {
-            continue;
-        }
-
-        char f_name[100] = "";
-        strncpy(f_name, snapshot_file->d_name, strlen(snapshot_file->d_name) - 3);
-        f_name[strlen(snapshot_file->d_name) - 3] = '\0';
-        printf("%s\n", f_name);
-
-        ok = 0;
-        for (int i = 3; i < argc; i++) 
-        {
-            const char *input_directory = argv[i];
-            if (isDirectory(input_directory)) 
-            {
-                checkDeleted(input_directory, f_name, &ok);
-            }
-        }
-        
-        if(ok == 0)
-        {
-           printf("File '%s' does not exist\n", f_name);     
-        }
-    }
-
-    closedir(ss_dir);
+    searchFiles(snapshots_dir, argc, argv);
+    
     fclose(comp_file);
     fclose(info_file);
 
