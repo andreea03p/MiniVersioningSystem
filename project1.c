@@ -40,6 +40,42 @@ FILE *comp_file;
 FILE *info_file;
 
 
+int isDirectory(const char *path) 
+{
+    struct stat statbuf;
+    return stat(path, &statbuf) == 0 && S_ISDIR(statbuf.st_mode);
+}
+
+int isRegularFile(const char *path) 
+{
+    struct stat path_stat;
+    return stat(path, &path_stat) == 0 && S_ISREG(path_stat.st_mode);
+}
+
+int isSymbolicLink(const char *path) 
+{
+    struct stat statbuf;
+    if (lstat(path, &statbuf) == -1) 
+    {
+        perror("error getting file information symlink");
+        exit(EXIT_FAILURE);
+    }
+    
+    return S_ISLNK(statbuf.st_mode);
+}
+
+int isHardLink(const char *path) 
+{
+    struct stat statbuf;
+    if (lstat(path, &statbuf) != 0) 
+    {
+        perror("Unable to get file information");
+        exit(EXIT_FAILURE);
+    }
+    return (statbuf.st_nlink > 1) ? 1 : 0;
+}
+
+
 char* mode_to_symbolic(mode_t mode) 
 {
     char* symbolic = (char*)malloc(10 * sizeof(char));
@@ -66,36 +102,8 @@ char* mode_to_symbolic(mode_t mode)
 }
 
 
-void checkPermissions(const char *permissions, const char *file_path)
-{
-    if(strcmp(permissions, "---------") == 0)
-    {
-        pid_t pid = fork();
-        
-        if (pid == -1) 
-        {
-            perror("fork");
-            exit(EXIT_FAILURE);
-        }
-        
-        if (pid == 0) 
-        {
-            // Child process
-            execl(PATH_TO_SCRIPT, "verify_malicious.sh", file_path, PATH_TO_ISOLATEDIR, NULL);
-            perror("execl");
-            exit(EXIT_FAILURE);
-        } 
-        else 
-        {
-            // Parent process
-            wait(NULL); // Wait for the child process to finish
-        }
-    }
-}
-
-
 // Print info in a txt file
-void printFileInfoToFile(const FileInfo *info, FILE *file)
+void writeFileInfoToFile(const FileInfo *info, FILE *file)
 {
     fprintf(file, "Inode: %ld\n", info->st_ino);
     fprintf(file, "Filename: %s\n", info->filename);
@@ -107,43 +115,6 @@ void printFileInfoToFile(const FileInfo *info, FILE *file)
     fprintf(file, "Last Modification Time: %s", ctime(&info->mtime));
     fprintf(file, "Last Access Time: %s", ctime(&info->atime));
     fprintf(file, "\n\n");
-}
-
-
-int isDirectory(const char *path) 
-{
-    struct stat statbuf;
-    return stat(path, &statbuf) == 0 && S_ISDIR(statbuf.st_mode);
-}
-
-int isRegularFile(const char *path) 
-{
-    struct stat path_stat;
-    return stat(path, &path_stat) == 0 && S_ISREG(path_stat.st_mode);
-}
-
-
-int isSymbolicLink(const char *path) 
-{
-    struct stat statbuf;
-    if (lstat(path, &statbuf) == -1) 
-    {
-        perror("Error getting file information");
-        exit(EXIT_FAILURE);
-    }
-    
-    return S_ISLNK(statbuf.st_mode);
-}
-
-int isHardLink(const char *path) 
-{
-    struct stat statbuf;
-    if (lstat(path, &statbuf) != 0) 
-    {
-        perror("Unable to get file information");
-        exit(EXIT_FAILURE);
-    }
-    return (statbuf.st_nlink > 1) ? 1 : 0;
 }
 
 
@@ -189,6 +160,8 @@ int readSnapshot(const char *snapshot_path)
     return 1;
 }
 
+
+// if file is renamed it prints and prev snapshot is deleted
 int searchOverwriteSS(ino_t inode, const char *newFilename, const char *prevName) 
 {
     DIR *dir;
@@ -218,6 +191,10 @@ int searchOverwriteSS(ino_t inode, const char *newFilename, const char *prevName
 
                 char ss_name[100] = PATH_TO_SSDIR;
                 strcat(ss_name, prevName);
+                strcat(ss_name, "_");
+                char inode_str[20];
+                sprintf(inode_str, "%lu", (unsigned long)inode);
+                strcat(ss_name, inode_str);
                 strcat(ss_name, ".ss");
                 if (remove(ss_name) == 0) 
                 {
@@ -288,6 +265,76 @@ int comparePrevVsCurr(const char *path)
 }
 
 
+void checkPermissions(const char *permissions, const char *file_path) 
+{
+    if (strcmp(permissions, "---------") == 0) 
+    {
+        int pipefd[2];
+        if (pipe(pipefd) == -1) 
+        {
+            perror("pipe");
+            exit(EXIT_FAILURE);
+        }
+
+        pid_t pid = fork();
+        
+        if (pid == -1) 
+        {
+            perror("fork");
+            exit(EXIT_FAILURE);
+        }
+
+        if (pid == 0) // child 
+        {
+            close(pipefd[0]);
+            
+            // Redirect stdout to the write end of the pipe
+            if (dup2(pipefd[1], STDOUT_FILENO) == -1) 
+            {
+                perror("dup2");
+                exit(EXIT_FAILURE);
+            }
+            close(pipefd[1]);
+            
+            execl(PATH_TO_SCRIPT, "verify_malicious.sh", file_path, PATH_TO_ISOLATEDIR, NULL);
+            perror("execl");
+            exit(EXIT_FAILURE);
+        } 
+        else // parent
+        {
+            close(pipefd[1]);
+
+            // Read from the pipe and print the script's output
+            char buffer[1024];
+            ssize_t bytes_read;
+            int found_dangerous_files = 0;
+            while ((bytes_read = read(pipefd[0], buffer, sizeof(buffer))) > 0) 
+            {
+                // Print the output received from the script
+                write(STDOUT_FILENO, buffer, bytes_read);
+
+                // Check if potentially dangerous file was found
+                if (strstr(buffer, "DANGEROUS") != NULL) 
+                {
+                    found_dangerous_files++;
+                }
+            }
+            if (bytes_read == -1) {
+                perror("read");
+                exit(EXIT_FAILURE);
+            }
+
+            // Wait for the child process to finish
+            wait(NULL);
+
+            close(pipefd[0]);
+
+            printf("Child Process %d terminated with PID %d and %d potentially dangerous file(s).\n", getpid(), pid, found_dangerous_files);
+        }
+    }
+}
+
+
 // Process the directory and call the subdirectories
 void parseDir(const char *dir_name, const char *snapshots_dir, const char *isolate_dir) 
 {
@@ -317,11 +364,11 @@ void parseDir(const char *dir_name, const char *snapshots_dir, const char *isola
         {
             // Create formatted path for .ss
             char snapshot_path[PATH_LENGTH];
-            snprintf(snapshot_path, PATH_LENGTH, "%s/%s.ss", snapshots_dir, file->d_name);
+            snprintf(snapshot_path, PATH_LENGTH, "%s/%s_%ld.ss", snapshots_dir, file->d_name, file->d_ino);
             
             if (stat(path, &file_stat) == -1) 
             {
-                perror("error getting info\n");
+                perror("error getting info stat\n");
                 exit(EXIT_FAILURE);
             }
 
@@ -337,7 +384,7 @@ void parseDir(const char *dir_name, const char *snapshots_dir, const char *isola
             strcpy(myCurrentInfo.parent_folder, parent);
             strcpy(myCurrentInfo.filename, file->d_name);
             
-            printFileInfoToFile(&myCurrentInfo, info_file);
+            writeFileInfoToFile(&myCurrentInfo, info_file);
 
             checkPermissions(mode_to_symbolic(myCurrentInfo.st_mode), path);
             
@@ -367,13 +414,39 @@ void parseDir(const char *dir_name, const char *snapshots_dir, const char *isola
             if (len != -1) 
             {
                 target[len] = '\0';
-                fprintf(info_file, "The symbolic link %s points to: %s\n\n\n", path, target);
+                fprintf(info_file, "The symbolic link %s points to: %s\n", path, target);
             } 
             else 
             {
                 perror("readlink");
                 exit(EXIT_FAILURE);
             }
+
+            // Create formatted path for .sym
+            char snapshot_path[PATH_LENGTH];
+            snprintf(snapshot_path, PATH_LENGTH, "%s/%s_%ld.sym", snapshots_dir, file->d_name, file->d_ino);
+            
+            if (lstat(path, &file_stat) == -1) 
+            {
+                perror("error getting info lstat\n");
+                exit(EXIT_FAILURE);
+            }
+
+            // Get parent folder
+            char parent[PATH_LENGTH];
+            snprintf(parent, sizeof(parent), "%s/..", dir_name);
+                
+            myCurrentInfo.st_ino = file_stat.st_ino;
+            myCurrentInfo.st_mode = file_stat.st_mode;
+            myCurrentInfo.st_size = file_stat.st_size;
+            myCurrentInfo.mtime = file_stat.st_mtime;
+            myCurrentInfo.atime = file_stat.st_atime;
+            strcpy(myCurrentInfo.parent_folder, parent);
+            strcpy(myCurrentInfo.filename, file->d_name);
+            
+            writeFileInfoToFile(&myCurrentInfo, info_file);
+            
+            writeSnapshot(snapshot_path);
         }
 
         // if (isHardLink(path)) 
@@ -395,8 +468,14 @@ void process_directory(const char *input_dir, const char *snapshots_dir, const c
 {
     // Create a child process
     pid_t pid = fork();
-    if (pid == 0) 
+    if(pid > 0)
     {
+        printf("this is the PARENT process with id: %d\n", getppid());
+    }
+    else if (pid == 0) 
+    {
+        printf("this is the PARENT process with id: %d\n", getppid());
+        printf("this is the CHILD process with id: %d\n", getpid());
         if (isDirectory(input_dir) && isDirectory(snapshots_dir)) 
         {
             //execlp("./p", "parseDir", input_directory, snapshots_dir, NULL);
@@ -412,7 +491,7 @@ void process_directory(const char *input_dir, const char *snapshots_dir, const c
             exit(EXIT_FAILURE);
         }
     } 
-    else if (pid < 0) 
+    else
     {
         perror("fork");
     }
@@ -455,7 +534,7 @@ void checkDeleted(const char *dir_name, const char *filename, int *ok)
 }
 
 
-void searchFiles(const char *snapshots_dir, int nrArg, char *args[])
+void searchForDeletedFilesInSnapshotsDir(const char *snapshots_dir, int nrArg, char *args[])
 {
     printf("\n\n");
     int ok = 0;
@@ -469,14 +548,17 @@ void searchFiles(const char *snapshots_dir, int nrArg, char *args[])
     struct dirent *snapshot_file;
     while ((snapshot_file = readdir(ss_dir)) != NULL) 
     {
-        if (strcmp(snapshot_file->d_name, ".") == 0 || strcmp(snapshot_file->d_name, "..") == 0) 
+        if (strcmp(snapshot_file->d_name, ".") == 0 || strcmp(snapshot_file->d_name, "..") == 0 || strstr(snapshot_file->d_name, ".sym")) 
         {
             continue;
         }
 
         char f_name[100] = "";
-        strncpy(f_name, snapshot_file->d_name, strlen(snapshot_file->d_name) - 3);
-        f_name[strlen(snapshot_file->d_name) - 3] = '\0';
+        // strncpy(f_name, snapshot_file->d_name, strlen(snapshot_file->d_name) - 3);
+        // f_name[strlen(snapshot_file->d_name) - 3] = '\0';
+
+        strncpy(f_name, snapshot_file->d_name, strrchr(snapshot_file->d_name, '_') - snapshot_file->d_name);
+        f_name[strrchr(snapshot_file->d_name, '_') - snapshot_file->d_name] = '\0';
 
         ok = 0;
         for (int i = 5; i < nrArg; i++) 
@@ -490,7 +572,7 @@ void searchFiles(const char *snapshots_dir, int nrArg, char *args[])
         
         if(ok == 0)
         {
-           printf("\nFile '%s' does not exist\n", f_name);     
+           printf("\nFile '%s' does not exist anymore\n", f_name);     
         }
     }
 
@@ -546,8 +628,8 @@ int main(int argc, char *argv[])
         }
     }
 
-    //Check if there are deleted files by snapshots name
-    searchFiles(snapshots_dir, argc, argv);
+    //Check if there are deleted files by snapshot name
+    searchForDeletedFilesInSnapshotsDir(snapshots_dir, argc, argv);
     
     fclose(comp_file);
     fclose(info_file);

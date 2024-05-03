@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Function to evaluate file based on criteria
-evaluate_file() {
+evaluate_file() 
+{
     local file_path=$1
     local isolated_space_dir=$2
 
@@ -15,26 +15,26 @@ evaluate_file() {
         if LC_ALL=C grep -q '[^\x00-\x7F]' "$file_path" || grep -q -E 'corrupted|dangerous|risk|attack|malware|malicious' "$file_path"; then
             echo "$(basename "$file_path") is DANGEROUS"
             mv "$file_path" "$isolated_space_dir"
-	    if [ $? -eq 0 ]; then
-	    	echo "$(basename "$file_path") moved to ISOLATED DIR successfully"
-	    else
- 	    	echo "Failed to move $(basename "$file_path") to ISOLATED DIR"
-	    fi
+            if [ $? -eq 0 ]; then
+                echo "$(basename "$file_path") moved to ISOLATED DIR successfully"
+            else
+                echo "Failed to move $(basename "$file_path") to ISOLATED DIR"
+            fi
         else
             echo "$(basename "$file_path") is SAFE"
             chmod 000 "$file_path"
-	    if [ $? -ne 0 ]; then
-	    	echo "Error: Failed to change permissions of $file_path."
-	    	exit 1
-	    fi
+            if [ $? -ne 0 ]; then
+                echo "Error: Failed to change permissions of $file_path."
+                exit 1
+            fi
         fi
     else
         echo "$(basename "$file_path") is SAFE"
         chmod 000 "$file_path"
-	if [ $? -ne 0 ]; then
-	    echo "Error: Failed to change permissions of $file_path."
-	    exit 1
-	fi
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to change permissions of $file_path."
+            exit 1
+        fi
     fi
 }
 
@@ -54,7 +54,7 @@ if [ ! -f "$file_path" ]; then
 fi
 
 
-# Change permissions of the file to make it writable
+# Change permissions of the file to work with it
 chmod 777 "$file_path"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to change permissions of $file_path."
