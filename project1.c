@@ -30,6 +30,7 @@ typedef struct
     char parent_folder[256];  // parent folders
     ino_t st_ino;             // i node
     char filename[256];       // file name
+    char linkTo[256];         // string to print the link
 
 } FileInfo;
 
@@ -76,6 +77,7 @@ int isHardLink(const char *path)
 }
 
 
+// Permissions string
 char* mode_to_symbolic(mode_t mode) 
 {
     char* symbolic = (char*)malloc(10 * sizeof(char));
@@ -114,6 +116,7 @@ void writeFileInfoToFile(const FileInfo *info, FILE *file)
     fprintf(file, "Size: %ld bytes\n", info->st_size);
     fprintf(file, "Last Modification Time: %s", ctime(&info->mtime));
     fprintf(file, "Last Access Time: %s", ctime(&info->atime));
+    fprintf(file, "%s", info->linkTo);
     fprintf(file, "\n\n");
 }
 
@@ -161,6 +164,7 @@ int readSnapshot(const char *snapshot_path)
 }
 
 
+
 // if file is renamed it prints and prev snapshot is deleted
 int searchOverwriteSS(ino_t inode, const char *newFilename, const char *prevName) 
 {
@@ -191,10 +195,6 @@ int searchOverwriteSS(ino_t inode, const char *newFilename, const char *prevName
 
                 char ss_name[100] = PATH_TO_SSDIR;
                 strcat(ss_name, prevName);
-                strcat(ss_name, "_");
-                char inode_str[20];
-                sprintf(inode_str, "%lu", (unsigned long)inode);
-                strcat(ss_name, inode_str);
                 strcat(ss_name, ".ss");
                 if (remove(ss_name) == 0) 
                 {
@@ -212,7 +212,6 @@ int searchOverwriteSS(ino_t inode, const char *newFilename, const char *prevName
     return 0;
     closedir(dir);
 }
-
 
 // Compare previous vs current version of snapshot
 int comparePrevVsCurr(const char *path)
@@ -265,6 +264,7 @@ int comparePrevVsCurr(const char *path)
 }
 
 
+// PIPES processes and script
 void checkPermissions(const char *permissions, const char *file_path) 
 {
     if (strcmp(permissions, "---------") == 0) 
@@ -364,7 +364,7 @@ void parseDir(const char *dir_name, const char *snapshots_dir, const char *isola
         {
             // Create formatted path for .ss
             char snapshot_path[PATH_LENGTH];
-            snprintf(snapshot_path, PATH_LENGTH, "%s/%s_%ld.ss", snapshots_dir, file->d_name, file->d_ino);
+            snprintf(snapshot_path, PATH_LENGTH, "%s/%s.ss", snapshots_dir, file->d_name);
             
             if (stat(path, &file_stat) == -1) 
             {
@@ -383,6 +383,7 @@ void parseDir(const char *dir_name, const char *snapshots_dir, const char *isola
             myCurrentInfo.atime = file_stat.st_atime;
             strcpy(myCurrentInfo.parent_folder, parent);
             strcpy(myCurrentInfo.filename, file->d_name);
+            strcpy(myCurrentInfo.linkTo, "NO LINK");
             
             writeFileInfoToFile(&myCurrentInfo, info_file);
 
@@ -409,12 +410,17 @@ void parseDir(const char *dir_name, const char *snapshots_dir, const char *isola
         if (isSymbolicLink(path)) 
         {
             char target[PATH_LENGTH];
+            char linkInfo[1000] = "";
 
             ssize_t len = readlink(path, target, sizeof(target) - 1);
             if (len != -1) 
             {
                 target[len] = '\0';
-                fprintf(info_file, "The symbolic link %s points to: %s\n", path, target);
+                strcat(linkInfo, "The symbolic link ");
+                strcat(linkInfo, path);
+                strcat(linkInfo, " points to ");
+                strcat(linkInfo, target);
+                strcat(linkInfo, "\n");
             } 
             else 
             {
@@ -424,7 +430,7 @@ void parseDir(const char *dir_name, const char *snapshots_dir, const char *isola
 
             // Create formatted path for .sym
             char snapshot_path[PATH_LENGTH];
-            snprintf(snapshot_path, PATH_LENGTH, "%s/%s_%ld.sym", snapshots_dir, file->d_name, file->d_ino);
+            snprintf(snapshot_path, PATH_LENGTH, "%s/%s.sym", snapshots_dir, file->d_name);
             
             if (lstat(path, &file_stat) == -1) 
             {
@@ -443,6 +449,7 @@ void parseDir(const char *dir_name, const char *snapshots_dir, const char *isola
             myCurrentInfo.atime = file_stat.st_atime;
             strcpy(myCurrentInfo.parent_folder, parent);
             strcpy(myCurrentInfo.filename, file->d_name);
+            strcpy(myCurrentInfo.linkTo, linkInfo);
             
             writeFileInfoToFile(&myCurrentInfo, info_file);
             
@@ -464,38 +471,36 @@ void parseDir(const char *dir_name, const char *snapshots_dir, const char *isola
 }
 
 
-void process_directory(const char *input_dir, const char *snapshots_dir, const char *isolate_dir) 
-{
-    // Create a child process
-    pid_t pid = fork();
-    if(pid > 0)
-    {
-        printf("this is the PARENT process with id: %d\n", getppid());
-    }
-    else if (pid == 0) 
-    {
-        printf("this is the PARENT process with id: %d\n", getppid());
-        printf("this is the CHILD process with id: %d\n", getpid());
-        if (isDirectory(input_dir) && isDirectory(snapshots_dir)) 
-        {
-            //execlp("./p", "parseDir", input_directory, snapshots_dir, NULL);
-            //perror("error exec");
-            //exit(EXIT_FAILURE);
-            parseDir(input_dir, snapshots_dir, isolate_dir);
-            printf("Snapshot for Directory %s created successfully.\n", input_dir);
-            exit(EXIT_SUCCESS);
-        } 
-        else 
-        {
-            perror("invalid in/out directories\n");
-            exit(EXIT_FAILURE);
-        }
-    } 
-    else
-    {
-        perror("fork");
-    }
-}
+// // Process each directory in a new process
+// void process_directory(const char *input_dir, const char *snapshots_dir, const char *isolate_dir) 
+// {
+//     // Create a child process
+//     pid_t pid = fork();
+//     if(pid > 0)
+//     {
+//         printf("this is the PARENT process with id: %d\n", getppid());
+//     }
+//     else if (pid == 0) 
+//     {
+//         printf("this is the PARENT process with id: %d\n", getppid());
+//         printf("this is the CHILD process with id: %d\n", getpid());
+//         if (isDirectory(input_dir) && isDirectory(snapshots_dir)) 
+//         {
+//             parseDir(input_dir, snapshots_dir, isolate_dir);
+//             printf("Snapshot for Directory %s created successfully.\n", input_dir);
+//             exit(EXIT_SUCCESS);
+//         } 
+//         else 
+//         {
+//             perror("invalid in/out directories\n");
+//             exit(EXIT_FAILURE);
+//         }
+//     } 
+//     else
+//     {
+//         perror("fork");
+//     }
+// }
 
 
 void checkDeleted(const char *dir_name, const char *filename, int *ok) 
@@ -554,11 +559,11 @@ void searchForDeletedFilesInSnapshotsDir(const char *snapshots_dir, int nrArg, c
         }
 
         char f_name[100] = "";
-        // strncpy(f_name, snapshot_file->d_name, strlen(snapshot_file->d_name) - 3);
-        // f_name[strlen(snapshot_file->d_name) - 3] = '\0';
+        strncpy(f_name, snapshot_file->d_name, strlen(snapshot_file->d_name) - 3);
+        f_name[strlen(snapshot_file->d_name) - 3] = '\0';
 
-        strncpy(f_name, snapshot_file->d_name, strrchr(snapshot_file->d_name, '_') - snapshot_file->d_name);
-        f_name[strrchr(snapshot_file->d_name, '_') - snapshot_file->d_name] = '\0';
+        // strncpy(f_name, snapshot_file->d_name, strrchr(snapshot_file->d_name, '_') - snapshot_file->d_name);
+        // f_name[strrchr(snapshot_file->d_name, '_') - snapshot_file->d_name] = '\0';
 
         ok = 0;
         for (int i = 5; i < nrArg; i++) 
@@ -605,27 +610,30 @@ int main(int argc, char *argv[])
     const char *snapshots_dir = argv[2];
     const char *isolate_dir = argv[4];
 
-    int child_count = 0;
     for (int i = 5; i < argc; i++) 
     {
-        const char *input_dir= argv[i];
-        process_directory(input_dir, snapshots_dir,isolate_dir);
-        child_count++;
+        pid_t pid = fork();
+        if (pid == -1) 
+        {
+            perror("fork");
+            exit(EXIT_FAILURE);
+        } 
+        else if (pid == 0) 
+        { 
+            printf("parent process id: %d\n", getppid());
+            printf("child process id: %d\n", getpid());
+            parseDir(argv[i], snapshots_dir, isolate_dir);
+            printf("Snapshot for %s created successfully.\n", argv[i]);
+            exit(EXIT_SUCCESS);
+        }
     }
 
+    // Wait for all child processes to terminate
     int status;
-    pid_t child_pid;
-    for (int i = 0; i < child_count; i++) 
+    pid_t pid;
+    while ((pid = wait(&status)) != -1) 
     {
-        child_pid = wait(&status);
-        if (WIFEXITED(status)) 
-        {
-            printf("Child Process %d terminated with PID %d and exit code %d.\n", i + 1, child_pid, WEXITSTATUS(status));
-        } 
-        else 
-        {
-            printf("Child Process %d terminated with PID %d and errors.\n", i + 1, child_pid);
-        }
+        printf("Process with PID %d ended with code %d\n", pid, WEXITSTATUS(status));
     }
 
     //Check if there are deleted files by snapshot name

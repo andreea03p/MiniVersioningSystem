@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <ctype.h>
 
-rter
 /*
 // pb1
 
@@ -112,7 +111,7 @@ int main()
 }
 */
 
-
+hjgfhj
 
 /*
 // pb 4
