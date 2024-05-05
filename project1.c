@@ -352,7 +352,6 @@ void checkPermissions(const char *permissions, const char *file_path, int *ct)
 
             if (found_dangerous_files > 0) 
             {
-                // Move the file if dangerous files were found
                 pid_t move_pid = fork();
                 if (move_pid == -1) 
                 {
@@ -360,13 +359,13 @@ void checkPermissions(const char *permissions, const char *file_path, int *ct)
                     exit(EXIT_FAILURE);
                 }
                 if (move_pid == 0) 
-                { // child process
+                {
                     execl(PATH_TO_MOVE_SCRIPT, "move_file.sh", file_path, PATH_TO_ISOLATEDIR, NULL);
                     perror("execl");
                     exit(EXIT_FAILURE);
                 } 
                 else 
-                { // parent process
+                {
                     wait(NULL); // Wait for the child process to finish moving the file
                     (*ct)++;
                 }
