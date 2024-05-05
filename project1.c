@@ -17,7 +17,9 @@
 #define comp_out "comparisons.txt"
 #define info_out "info.txt"
 #define SNAPSHOT_DIR "SNAPSHOTS" 
-#define PATH_TO_SCRIPT "/home/user/SO/PROIECT/verify_malicious.sh"
+#define ISOLATED_DIR "ISOLATED" 
+#define PATH_TO_VERIFY_SCRIPT "/home/user/SO/PROIECT/verify_malicious.sh"
+#define PATH_TO_MOVE_SCRIPT "/home/user/SO/PROIECT/move_file.sh"
 #define PATH_TO_SSDIR "/home/user/SO/PROIECT/SNAPSHOTS/"
 #define PATH_TO_ISOLATEDIR "/home/user/SO/PROIECT/ISOLATED/"
 
@@ -122,47 +124,65 @@ void writeFileInfoToFile(const FileInfo *info, FILE *file)
 
 
 // Write info in snapshot
-void writeSnapshot(const char *snapshot_path)
+void writeSnapshot(const char *snapshot_path) 
 {
-    int snapshot = open(snapshot_path, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
+    int snapshot = open(snapshot_path, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH);
     if (snapshot == -1) 
     {
         perror("Error opening snapshot file to write in\n");
         return;
     }
-    
-    unsigned char buffer[sizeof(FileInfo)];
-    memcpy(buffer, &myCurrentInfo, sizeof(FileInfo));
-    
-    if (write(snapshot, buffer, sizeof(FileInfo)) == -1)
+
+    char buffer[2048];
+
+    int len = snprintf(buffer, sizeof(buffer), 
+                       "Mode: %o\nSize: %ld\nModification Time: %ld\nAccess Time: %ld\nParent Folder: %s\nInode: %lu\nFilename: %s\nLink: %s\n",
+                       myCurrentInfo.st_mode, myCurrentInfo.st_size, 
+                       (long)myCurrentInfo.mtime, (long)myCurrentInfo.atime, 
+                       myCurrentInfo.parent_folder, (unsigned long)myCurrentInfo.st_ino, 
+                       myCurrentInfo.filename, myCurrentInfo.linkTo);
+
+    if (write(snapshot, buffer, len) == -1) 
     {
         perror("Error writing in snapshot file\n");
+        close(snapshot);
         return;
     }
-    
+
     close(snapshot);
 }
 
 // Read info from snapshot
-int readSnapshot(const char *snapshot_path)
+int readSnapshot(const char *snapshot_path) 
 {
     int snapshot = open(snapshot_path, O_RDONLY);
-    if (snapshot == -1)
+    if (snapshot == -1) 
     {
         perror("Error opening snapshot file to read from\n");
         return 0;
     }
 
-    if (read(snapshot, &myPreviousInfo, sizeof(FileInfo)) == -1)
+    char buffer[2048];
+
+    ssize_t bytes_read = read(snapshot, buffer, sizeof(buffer));
+    if (bytes_read == -1) 
     {
         perror("Error reading from snapshot file\n");
+        close(snapshot);
         return 0;
     }
 
+    sscanf(buffer, 
+           "Mode: %o\nSize: %ld\nModification Time: %ld\nAccess Time: %ld\nParent Folder: %s\nInode: %lu\nFilename: %s\nLink: %s\n",
+           &myPreviousInfo.st_mode, &myPreviousInfo.st_size, 
+           (long *)&myPreviousInfo.mtime, (long *)&myPreviousInfo.atime, 
+           myPreviousInfo.parent_folder, (unsigned long *)&myPreviousInfo.st_ino, 
+           myPreviousInfo.filename, myPreviousInfo.linkTo);
+
     close(snapshot);
+
     return 1;
 }
-
 
 
 // if file is renamed it prints and prev snapshot is deleted
@@ -187,7 +207,7 @@ int searchOverwriteSS(ino_t inode, const char *newFilename, const char *prevName
         char snapshotPath[PATH_LENGTH];
         snprintf(snapshotPath, sizeof(snapshotPath), "%s/%s", SNAPSHOT_DIR, ss_file->d_name);
         
-        if (readSnapshot(snapshotPath) && !isSymbolicLink(snapshotPath)) 
+        if (readSnapshot(snapshotPath)) 
         {
             if (inode == myPreviousInfo.st_ino && !isSymbolicLink(snapshotPath)) 
             {
@@ -213,6 +233,7 @@ int searchOverwriteSS(ino_t inode, const char *newFilename, const char *prevName
     closedir(dir);
 }
 
+
 // Compare previous vs current version of snapshot
 int comparePrevVsCurr(const char *path)
 {
@@ -225,7 +246,7 @@ int comparePrevVsCurr(const char *path)
         counter++;
     }
 
-    if(myCurrentInfo.mtime != myPreviousInfo.mtime)
+    if(myCurrentInfo.mtime != myPreviousInfo.mtime && myCurrentInfo.st_ino == myPreviousInfo.st_ino)
     {
         fprintf(comp_file, "Folder: %s, File: %s was modified in the meantime\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
         counter++;
@@ -265,7 +286,7 @@ int comparePrevVsCurr(const char *path)
 
 
 // PIPES processes and script
-void checkPermissions(const char *permissions, const char *file_path) 
+void checkPermissions(const char *permissions, const char *file_path, int *ct) 
 {
     if (strcmp(permissions, "---------") == 0) 
     {
@@ -284,7 +305,7 @@ void checkPermissions(const char *permissions, const char *file_path)
             exit(EXIT_FAILURE);
         }
 
-        if (pid == 0) // child 
+        if (pid == 0) 
         {
             close(pipefd[0]);
             
@@ -296,11 +317,11 @@ void checkPermissions(const char *permissions, const char *file_path)
             }
             close(pipefd[1]);
             
-            execl(PATH_TO_SCRIPT, "verify_malicious.sh", file_path, PATH_TO_ISOLATEDIR, NULL);
+            execl(PATH_TO_VERIFY_SCRIPT, "verify_malicious.sh", file_path, NULL);
             perror("execl");
             exit(EXIT_FAILURE);
         } 
-        else // parent
+        else 
         {
             close(pipefd[1]);
 
@@ -313,13 +334,13 @@ void checkPermissions(const char *permissions, const char *file_path)
                 // Print the output received from the script
                 write(STDOUT_FILENO, buffer, bytes_read);
 
-                // Check if potentially dangerous file was found
-                if (strstr(buffer, "DANGEROUS") != NULL) 
+                if (strcmp(buffer, "SAFE\n") != 0) 
                 {
                     found_dangerous_files++;
                 }
             }
-            if (bytes_read == -1) {
+            if (bytes_read == -1) 
+            {
                 perror("read");
                 exit(EXIT_FAILURE);
             }
@@ -329,14 +350,34 @@ void checkPermissions(const char *permissions, const char *file_path)
 
             close(pipefd[0]);
 
-            printf("Child Process %d terminated with PID %d and %d potentially dangerous file(s).\n", getpid(), pid, found_dangerous_files);
+            if (found_dangerous_files > 0) 
+            {
+                // Move the file if dangerous files were found
+                pid_t move_pid = fork();
+                if (move_pid == -1) 
+                {
+                    perror("fork");
+                    exit(EXIT_FAILURE);
+                }
+                if (move_pid == 0) 
+                { // child process
+                    execl(PATH_TO_MOVE_SCRIPT, "move_file.sh", file_path, PATH_TO_ISOLATEDIR, NULL);
+                    perror("execl");
+                    exit(EXIT_FAILURE);
+                } 
+                else 
+                { // parent process
+                    wait(NULL); // Wait for the child process to finish moving the file
+                    (*ct)++;
+                }
+            }
         }
     }
 }
 
 
 // Process the directory and call the subdirectories
-void parseDir(const char *dir_name, const char *snapshots_dir, const char *isolate_dir) 
+void processDirectory(const char *dir_name, const char *snapshots_dir, const char *isolate_dir, int *dangerous_counter) 
 {
     DIR *dir;
     struct dirent *file;
@@ -387,7 +428,9 @@ void parseDir(const char *dir_name, const char *snapshots_dir, const char *isola
             
             writeFileInfoToFile(&myCurrentInfo, info_file);
 
-            checkPermissions(mode_to_symbolic(myCurrentInfo.st_mode), path);
+            int ct = 0;
+            checkPermissions(mode_to_symbolic(myCurrentInfo.st_mode), path, &ct);
+            (*dangerous_counter) += ct;
             
             int snapshotStatus = readSnapshot(snapshot_path);
             if (snapshotStatus == 0) 
@@ -463,7 +506,8 @@ void parseDir(const char *dir_name, const char *snapshots_dir, const char *isola
 
         if (isDirectory(path)) 
         {
-            parseDir(path, snapshots_dir, isolate_dir);
+            printf("%d\n", *dangerous_counter);
+            processDirectory(path, snapshots_dir, isolate_dir, dangerous_counter);
         }
     }
 
@@ -609,9 +653,12 @@ int main(int argc, char *argv[])
 
     const char *snapshots_dir = argv[2];
     const char *isolate_dir = argv[4];
+    int dangerous_counter;
 
     for (int i = 5; i < argc; i++) 
     {
+        dangerous_counter = 0;
+
         pid_t pid = fork();
         if (pid == -1) 
         {
@@ -622,7 +669,7 @@ int main(int argc, char *argv[])
         { 
             printf("parent process id: %d\n", getppid());
             printf("child process id: %d\n", getpid());
-            parseDir(argv[i], snapshots_dir, isolate_dir);
+            processDirectory(argv[i], snapshots_dir, isolate_dir, &dangerous_counter);
             printf("Snapshot for %s created successfully.\n", argv[i]);
             exit(EXIT_SUCCESS);
         }
@@ -633,7 +680,7 @@ int main(int argc, char *argv[])
     pid_t pid;
     while ((pid = wait(&status)) != -1) 
     {
-        printf("Process with PID %d ended with code %d\n", pid, WEXITSTATUS(status));
+        printf("Process with PID %d ended with code %d and %d dangerous files.\n", pid, WEXITSTATUS(status), dangerous_counter);
     }
 
     //Check if there are deleted files by snapshot name
