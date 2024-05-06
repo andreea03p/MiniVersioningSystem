@@ -1,7 +1,7 @@
 Mode: 100777
 Size: 917
 Modification Time: 1714427938
-Access Time: 1714863197
+Access Time: 1714953297
 Parent Folder: DIRECTOR1/subdir/..
 Inode: 543170
 Filename: fisier.txt

@@ -1,8 +1,0 @@
-Mode: 100000
-Size: 28
-Modification Time: 1714946164
-Access Time: 1714953120
-Parent Folder: DIRECTOR3/..
-Inode: 524301
-Filename: data.txt
-Link: NO LINK

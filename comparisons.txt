@@ -1,15 +1,28 @@
-524767 - 524767
-Folder: DIRECTOR3/.., File: integers.bin - Same amount of data
+524830 - 524830
+Folder: DIRECTOR2/subdir/.., File: dog.c - Same amount of data
 
-529546 - 529546
-Folder: DIRECTOR3/.., File: risky.c - Same amount of data
+524763 - 524763
+Folder: DIRECTOR2/subdir/.., File: hardcoding.c - Same amount of data
 
-524301 - 524301
-Folder: DIRECTOR3/.., File: data.txt was accessed in the meantime
-Folder: DIRECTOR3/.., File: data.txt - Same amount of data
+524702 - 524702
+Folder: DIRECTOR2/subdir/.., File: fisbin.c - Same amount of data
+
+524761 - 524761
+Folder: DIRECTOR2/subdir/subsub/.., File: aux.txt - Same amount of data
+
+536730 - 536730
+Folder: DIRECTOR2/subdir/subsub/.., File: hello.c - Same amount of data
+
+528223 - 528223
+Folder: DIRECTOR2/.., File: chr.c - Same amount of data
+
+535437 - 535437
+Folder: DIRECTOR2/.., File: pb.c - Same amount of data
+
+535076 - 535076
+Folder: DIRECTOR2/.., File: data.txt - Same amount of data
 
 536463 - 536463
-Folder: DIRECTOR1/subdir/.., File: sub1.java was accessed in the meantime
 Folder: DIRECTOR1/subdir/.., File: sub1.java - Same amount of data
 
 536464 - 536464
@@ -17,6 +30,9 @@ Folder: DIRECTOR1/subdir/.., File: sub2.py - Same amount of data
 
 543170 - 543170
 Folder: DIRECTOR1/subdir/.., File: fisier.txt - Same amount of data
+
+524766 - 524766
+Folder: DIRECTOR1/.., File: file.csv - Same amount of data
 
 536465 - 536465
 Folder: DIRECTOR1/.., File: prob.sh - Same amount of data
@@ -33,28 +49,10 @@ Folder: DIRECTOR1/subdir2/.., File: mere.txt - Same amount of data
 529536 - 529536
 Folder: DIRECTOR1/subdir2/.., File: bobo.txt - Same amount of data
 
-536730 - 536730
-Folder: DIRECTOR1/subdir2/.., File: hello.c - Same amount of data
-
-524763 - 524763
-Folder: DIRECTOR2/subdir/.., File: hardcoding.c - Same amount of data
-
-535437 - 535437
-Folder: DIRECTOR2/subdir/subsub/.., File: problem.c - Same amount of data
-
-524761 - 524761
-Folder: DIRECTOR2/subdir/subsub/.., File: aux.txt - Same amount of data
-
-524702 - 524702
-Folder: DIRECTOR2/subdir/subsub/.., File: fisbin.c - Same amount of data
-
-524766 - 524766
-Folder: DIRECTOR2/.., File: file.csv - Same amount of data
+524767 - 524767
+Folder: DIRECTOR3/.., File: integers.bin - Same amount of data
 
 534879 - 534879
-Folder: DIRECTOR2/.., File: caractere.c - Same amount of data
-
-529527 - 529527
-Folder: DIRECTOR2/.., File: cat.c was accessed in the meantime
-Folder: DIRECTOR2/.., File: cat.c - Same amount of data
+Folder: DIRECTOR3/.., File: chars.c was accessed in the meantime
+Folder: DIRECTOR3/.., File: chars.c - Same amount of data
 

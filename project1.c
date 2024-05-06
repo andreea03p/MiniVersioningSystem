@@ -185,6 +185,23 @@ int readSnapshot(const char *snapshot_path)
 }
 
 
+void path_to_safe_filename(const char *path, char *safe_filename)
+{
+    for (int i = 0; i < strlen(path); ++i)
+    {
+        if (path[i] == '/')
+        {
+            safe_filename[i] = '_';
+        }
+        else
+        {
+            safe_filename[i] = path[i];
+        }
+    }
+    safe_filename[strlen(path)] = '\0';
+}
+
+
 // if file is renamed it prints and prev snapshot is deleted
 int searchOverwriteSS(ino_t inode, const char *newFilename, const char *prevName) 
 {
@@ -211,20 +228,30 @@ int searchOverwriteSS(ino_t inode, const char *newFilename, const char *prevName
         {
             if (inode == myPreviousInfo.st_ino && !isSymbolicLink(snapshotPath)) 
             {
-                fprintf(comp_file, "Snapshot with the same inode(%ld) already exists for file: %s (previous file name: %s)\n\n", inode, newFilename, prevName);
-
-                char ss_name[100] = PATH_TO_SSDIR;
-                strcat(ss_name, prevName);
-                strcat(ss_name, ".ss");
-                if (remove(ss_name) == 0) 
+                fprintf(comp_file, "Snapshot with the same inode(%ld) already exists for file: %s (previous file name: %s)\n", inode, newFilename, prevName);
+                if(strcmp(newFilename, prevName) == 0)
                 {
-                    printf("File '%s' deleted successfully.\n", ss_name);
-                } 
-                else 
-                {
-                    perror("Error deleting file");
+                    fprintf(comp_file, "File %s was moved from %s to %s\n\n", newFilename, myPreviousInfo.parent_folder, myCurrentInfo.parent_folder);
                 }
+                else
+                {
+                    char ss_name[PATH_LENGTH] = PATH_TO_SSDIR;
+                    char aux[PATH_LENGTH] = "";
+                    path_to_safe_filename(myPreviousInfo.parent_folder, aux);
+                    strcat(ss_name, aux);
+                    ss_name[strlen(ss_name) - 2] = '\0';
+                    strcat(ss_name, prevName);
+                    strcat(ss_name, ".ss");
 
+                    if (remove(ss_name) == 0) 
+                    {
+                        printf("File '%s' deleted successfully.\n", ss_name);
+                    } 
+                    else 
+                    {
+                        perror("Error deleting file");
+                    }
+                }
                 return 1;
             }
         }
@@ -286,86 +313,63 @@ int comparePrevVsCurr(const char *path)
 
 
 // PIPES processes and script
-void checkPermissions(const char *permissions, const char *file_path, int *ct) 
-{
-    if (strcmp(permissions, "---------") == 0) 
-    {
+void checkPermissions(const char *permissions, const char *file_path, int *ct) {
+    if (strcmp(permissions, "---------") == 0) {
         int pipefd[2];
-        if (pipe(pipefd) == -1) 
-        {
+        if (pipe(pipefd) == -1) {
             perror("pipe");
             exit(EXIT_FAILURE);
         }
 
         pid_t pid = fork();
-        
-        if (pid == -1) 
-        {
+
+        if (pid == -1) {
             perror("fork");
             exit(EXIT_FAILURE);
         }
 
-        if (pid == 0) 
-        {
-            close(pipefd[0]);
-            
-            // Redirect stdout to the write end of the pipe
-            if (dup2(pipefd[1], STDOUT_FILENO) == -1) 
-            {
-                perror("dup2");
-                exit(EXIT_FAILURE);
-            }
+        if (pid == 0) {
+            close(pipefd[0]); // Close unused read end
+            dup2(pipefd[1], STDOUT_FILENO); // Redirect stdout to write end of the pipe
             close(pipefd[1]);
-            
+
             execl(PATH_TO_VERIFY_SCRIPT, "verify_malicious.sh", file_path, NULL);
             perror("execl");
             exit(EXIT_FAILURE);
-        } 
-        else 
-        {
-            close(pipefd[1]);
+        } else {
+            close(pipefd[1]); // Close unused write end
 
-            // Read from the pipe and print the script's output
             char buffer[1024];
             ssize_t bytes_read;
             int found_dangerous_files = 0;
-            while ((bytes_read = read(pipefd[0], buffer, sizeof(buffer))) > 0) 
-            {
-                // Print the output received from the script
-                write(STDOUT_FILENO, buffer, bytes_read);
+            while ((bytes_read = read(pipefd[0], buffer, sizeof(buffer) - 1)) > 0) {
+                buffer[bytes_read] = '\0';
+                printf("%s", buffer);
 
-                if (strcmp(buffer, "SAFE\n") != 0) 
-                {
+                if (strstr(buffer, "SAFE") == NULL) {
                     found_dangerous_files++;
                 }
             }
-            if (bytes_read == -1) 
-            {
+
+            if (bytes_read == -1) {
                 perror("read");
                 exit(EXIT_FAILURE);
             }
 
-            // Wait for the child process to finish
-            wait(NULL);
-
             close(pipefd[0]);
+            wait(NULL); // Wait for the child process to finish
 
-            if (found_dangerous_files > 0) 
-            {
+            if (found_dangerous_files > 0) {
                 pid_t move_pid = fork();
-                if (move_pid == -1) 
-                {
+                if (move_pid == -1) {
                     perror("fork");
                     exit(EXIT_FAILURE);
                 }
-                if (move_pid == 0) 
-                {
+                if (move_pid == 0) {
                     execl(PATH_TO_MOVE_SCRIPT, "move_file.sh", file_path, PATH_TO_ISOLATEDIR, NULL);
                     perror("execl");
                     exit(EXIT_FAILURE);
-                } 
-                else 
-                {
+                } else {
                     wait(NULL); // Wait for the child process to finish moving the file
                     (*ct)++;
                 }
@@ -413,6 +417,14 @@ void processDirectory(const char *dir_name, const char *snapshots_dir, const cha
             }
 
             // Get parent folder
+            char safe_filename[PATH_LENGTH];
+            path_to_safe_filename(path, safe_filename);
+            if (snprintf(snapshot_path, PATH_LENGTH, "%s/%s.ss", snapshots_dir, safe_filename) >= PATH_LENGTH)
+            {
+                fprintf(stderr, "Error: File path too long.\n");
+                continue;
+            }
+            
             char parent[PATH_LENGTH];
             snprintf(parent, sizeof(parent), "%s/..", dir_name);
                 
@@ -471,8 +483,15 @@ void processDirectory(const char *dir_name, const char *snapshots_dir, const cha
             }
 
             // Create formatted path for .sym
+            char safe_filename[PATH_LENGTH];
+            path_to_safe_filename(path, safe_filename);
             char snapshot_path[PATH_LENGTH];
-            snprintf(snapshot_path, PATH_LENGTH, "%s/%s.sym", snapshots_dir, file->d_name);
+            if (snprintf(snapshot_path, PATH_LENGTH, "%s/%s.ss", snapshots_dir, safe_filename) >= PATH_LENGTH)
+            {
+                fprintf(stderr, "Error: File path too long.\n");
+                continue;
+            }
+
             
             if (lstat(path, &file_stat) == -1) 
             {
@@ -512,38 +531,6 @@ void processDirectory(const char *dir_name, const char *snapshots_dir, const cha
 
     closedir(dir);
 }
-
-
-// // Process each directory in a new process
-// void process_directory(const char *input_dir, const char *snapshots_dir, const char *isolate_dir) 
-// {
-//     // Create a child process
-//     pid_t pid = fork();
-//     if(pid > 0)
-//     {
-//         printf("this is the PARENT process with id: %d\n", getppid());
-//     }
-//     else if (pid == 0) 
-//     {
-//         printf("this is the PARENT process with id: %d\n", getppid());
-//         printf("this is the CHILD process with id: %d\n", getpid());
-//         if (isDirectory(input_dir) && isDirectory(snapshots_dir)) 
-//         {
-//             parseDir(input_dir, snapshots_dir, isolate_dir);
-//             printf("Snapshot for Directory %s created successfully.\n", input_dir);
-//             exit(EXIT_SUCCESS);
-//         } 
-//         else 
-//         {
-//             perror("invalid in/out directories\n");
-//             exit(EXIT_FAILURE);
-//         }
-//     } 
-//     else
-//     {
-//         perror("fork");
-//     }
-// }
 
 
 void checkDeleted(const char *dir_name, const char *filename, int *ok) 
@@ -601,12 +588,26 @@ void searchForDeletedFilesInSnapshotsDir(const char *snapshots_dir, int nrArg, c
             continue;
         }
 
-        char f_name[100] = "";
-        strncpy(f_name, snapshot_file->d_name, strlen(snapshot_file->d_name) - 3);
-        f_name[strlen(snapshot_file->d_name) - 3] = '\0';
-
-        // strncpy(f_name, snapshot_file->d_name, strrchr(snapshot_file->d_name, '_') - snapshot_file->d_name);
-        // f_name[strrchr(snapshot_file->d_name, '_') - snapshot_file->d_name] = '\0';
+        char f_name[256];
+    
+        char *last_underscore = strrchr(snapshot_file->d_name, '_');
+        if (last_underscore == NULL) 
+        {
+            f_name[0] = '\0';
+        } 
+        else 
+        {
+            size_t length_after_underscore = strlen(last_underscore + 1);
+            if (length_after_underscore <= 3) 
+            {
+                f_name[0] = '\0';
+            } 
+            else 
+            {
+                snprintf(f_name, sizeof(f_name), "%s", last_underscore + 1);
+                f_name[length_after_underscore - 3] = '\0';
+            }
+        }
 
         ok = 0;
         for (int i = 5; i < nrArg; i++) 
@@ -652,12 +653,10 @@ int main(int argc, char *argv[])
 
     const char *snapshots_dir = argv[2];
     const char *isolate_dir = argv[4];
-    int dangerous_counter;
+    int dangerous_counter = 0;
 
     for (int i = 5; i < argc; i++) 
     {
-        dangerous_counter = 0;
-
         pid_t pid = fork();
         if (pid == -1) 
         {
@@ -665,12 +664,12 @@ int main(int argc, char *argv[])
             exit(EXIT_FAILURE);
         } 
         else if (pid == 0) 
-        { 
+        {
             printf("parent process id: %d\n", getppid());
             printf("child process id: %d\n", getpid());
             processDirectory(argv[i], snapshots_dir, isolate_dir, &dangerous_counter);
             printf("Snapshot for %s created successfully.\n", argv[i]);
-            exit(EXIT_SUCCESS);
+            exit(dangerous_counter); // Return the count of dangerous files as the exit status
         }
     }
 
@@ -679,7 +678,7 @@ int main(int argc, char *argv[])
     pid_t pid;
     while ((pid = wait(&status)) != -1) 
     {
-        printf("Process with PID %d ended with code %d and %d dangerous files.\n", pid, WEXITSTATUS(status), dangerous_counter);
+        printf("Process with PID %d ended with code %d and %d dangerous files.\n", pid, WEXITSTATUS(status), WEXITSTATUS(status));
     }
 
     //Check if there are deleted files by snapshot name

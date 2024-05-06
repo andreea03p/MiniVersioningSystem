@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <ctype.h>
 
-
 /*
 // pb1
 

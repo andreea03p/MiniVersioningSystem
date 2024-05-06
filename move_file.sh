@@ -18,11 +18,7 @@ if [ ! -d "$destination_dir" ]; then
     exit 1
 fi
 
-chmod 777 "$file_path"
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to change permissions of $file_path."
-    exit 1
-fi
+chmod 777 "$file_path" || { echo "Error: Failed to change permissions of $file_path."; exit 1; }
 
 filename=$(basename -- "$file_path")
 destination_file="$destination_dir/$filename"
@@ -32,9 +28,6 @@ if [ -e "$destination_file" ]; then
     exit 1
 fi
 
-mv "$file_path" "$destination_dir"
-if [ $? -eq 0 ]; then
-    echo "File $filename moved successfully to $destination_dir."
-else
+mv "$file_path" "$destination_file" && \
+    echo "File $filename moved successfully to $destination_dir." || \
     echo "Failed to move file $filename to $destination_dir."
-fi
