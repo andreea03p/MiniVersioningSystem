@@ -1,54 +1,17 @@
+529546 - 529546
+Folder: DIRECTOR3/.., File: steph.c - Same amount of data
+
 524767 - 524767
 Folder: DIRECTOR3/.., File: integers.bin - Same amount of data
 
-524702 - 524702
+524831 - 524831
 Folder: DIRECTOR3/.., File: fisbin.c - Same amount of data
-
-529546 - 529546
-Folder: DIRECTOR3/.., File: risky.c - Same amount of data
-
-524852 - 524852
-Folder: DIRECTOR3/.., File: file.txt - Same amount of data
-
-528222 - 528222
-Folder: DIRECTOR3/.., File: bomb.c - Same amount of data
-
-535437 - 535437
-Folder: DIRECTOR2/subdir/.., File: so.c - Same amount of data
-
-524830 - 524830
-Folder: DIRECTOR2/subdir/.., File: dog.c - Same amount of data
-
-524763 - 524763
-Folder: DIRECTOR2/subdir/.., File: hardcoding.c - Same amount of data
-
-536463 - 536463
-Folder: DIRECTOR2/subdir/subsub/.., File: subject.java - Same amount of data
-
-524761 - 524761
-Folder: DIRECTOR2/subdir/subsub/.., File: file.txt - Same amount of data
-
-536730 - 536730
-Folder: DIRECTOR2/subdir/subsub/.., File: hello.c - Same amount of data
-
-528223 - 528223
-Folder: DIRECTOR2/.., File: caractere.c - Same amount of data
-
-534879 - 534879
-Folder: DIRECTOR2/.., File: bd.c - Same amount of data
-
-535062 - 524831
-Folder: DIRECTOR2/.., File: data.txt was modified in the meantime
-Folder: DIRECTOR2/.., File: data.txt - Some data was added
 
 536464 - 536464
 Folder: DIRECTOR1/subdir/.., File: sub2.py - Same amount of data
 
 543170 - 543170
 Folder: DIRECTOR1/subdir/.., File: fisier.txt - Same amount of data
-
-524766 - 524766
-Folder: DIRECTOR1/.., File: file.csv - Same amount of data
 
 536465 - 536465
 Folder: DIRECTOR1/.., File: prob.sh - Same amount of data
@@ -63,5 +26,36 @@ Folder: DIRECTOR1/subdir2/.., File: py.py - Same amount of data
 Folder: DIRECTOR1/subdir2/.., File: pere.txt - Same amount of data
 
 529536 - 529536
-Folder: DIRECTOR1/subdir2/.., File: bobo.txt - Same amount of data
+Folder: DIRECTOR1/.., File: bobo.txt - Same amount of data
+
+535437 - 535437
+Folder: DIRECTOR2/subdir/.., File: so.c - Same amount of data
+
+524763 - 524763
+Folder: DIRECTOR2/subdir/.., File: hardcoding.c - Same amount of data
+
+524766 - 524766
+Folder: DIRECTOR2/subdir/.., File: file.csv - Same amount of data
+
+536463 - 536463
+Folder: DIRECTOR2/subdir/subsub/.., File: subject.java - Same amount of data
+
+524761 - 524761
+Folder: DIRECTOR2/subdir/subsub/.., File: file.txt - Same amount of data
+
+536730 - 536730
+Folder: DIRECTOR2/subdir/subsub/.., File: hello.c - Same amount of data
+
+524830 - 524830
+Folder: DIRECTOR2/.., File: dog.c - Same amount of data
+
+528223 - 528223
+Folder: DIRECTOR2/.., File: caractere.c - Same amount of data
+
+534879 - 534879
+Folder: DIRECTOR2/.., File: bd.c was accessed in the meantime
+Folder: DIRECTOR2/.., File: bd.c - Same amount of data
+
+524832 - 524832
+Folder: DIRECTOR2/.., File: data.txt - Same amount of data
 

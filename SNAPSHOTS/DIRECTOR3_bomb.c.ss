@@ -1,7 +1,7 @@
-Mode: 100777
+Mode: 100000
 Size: 15661
 Modification Time: 1715021701
-Access Time: 1715111599
+Access Time: 1715113163
 Parent Folder: DIRECTOR3/..
 Inode: 528222
 Filename: bomb.c
