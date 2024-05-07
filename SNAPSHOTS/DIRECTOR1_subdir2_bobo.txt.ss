@@ -1,7 +1,7 @@
 Mode: 100777
 Size: 21
 Modification Time: 1714946253
-Access Time: 1714953297
+Access Time: 1715111613
 Parent Folder: DIRECTOR1/subdir2/..
 Inode: 529536
 Filename: bobo.txt

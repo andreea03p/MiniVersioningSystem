@@ -1,9 +1,0 @@
-Mode: 120777
-Size: 10
-Modification Time: 1713825944
-Access Time: 1714945857
-Parent Folder: DIRECTOR1/subdir/..
-Inode: 536276
-Filename: s1
-Link: The symbolic link DIRECTOR1/subdir/s1 points to fisier.txt
-

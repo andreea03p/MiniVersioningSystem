@@ -185,7 +185,7 @@ int readSnapshot(const char *snapshot_path)
 }
 
 
-void path_to_safe_filename(const char *path, char *safe_filename)
+void pathToSaveFilename(const char *path, char *safe_filename)
 {
     for (int i = 0; i < strlen(path); ++i)
     {
@@ -202,7 +202,52 @@ void path_to_safe_filename(const char *path, char *safe_filename)
 }
 
 
-// if file is renamed it prints and prev snapshot is deleted
+// Compare previous vs current version of snapshot
+int comparePrevVsCurr(const char *path)
+{
+    int counter = 0;
+
+    fprintf(comp_file, "%ld - %ld\n", myPreviousInfo.st_ino, myCurrentInfo.st_ino);
+    if(myCurrentInfo.atime != myPreviousInfo.atime && myCurrentInfo.st_ino == myPreviousInfo.st_ino)
+    {
+        fprintf(comp_file, "Folder: %s, File: %s was accessed in the meantime\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
+        counter++;
+    }
+
+    if(myCurrentInfo.mtime != myPreviousInfo.mtime)
+    {
+        fprintf(comp_file, "Folder: %s, File: %s was modified in the meantime\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
+        counter++;
+    }
+
+    if (myCurrentInfo.st_size < myPreviousInfo.st_size)
+    {
+        fprintf(comp_file, "Folder: %s, File: %s - Some data was removed\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
+        counter++;
+    }
+    else if (myCurrentInfo.st_size > myPreviousInfo.st_size)
+    {
+        fprintf(comp_file, "Folder: %s, File: %s - Some data was added\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
+        counter++;
+    }
+    else
+    {
+        fprintf(comp_file, "Folder: %s, File: %s - Same amount of data\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
+        counter++;
+    }
+
+    if(myCurrentInfo.st_mode != myPreviousInfo.st_mode)
+    {
+        fprintf(comp_file, "File: %s; permissions were changed from %s TO %s\n", myCurrentInfo.filename, mode_to_symbolic(myPreviousInfo.st_mode), mode_to_symbolic(myCurrentInfo.st_mode));
+    }
+
+    fprintf(comp_file, "\n");
+
+    return counter;
+}
+
+
+// if file is renamed/moved it prints and prev snapshot is deleted
 int searchOverwriteSS(ino_t inode, const char *newFilename, const char *prevName) 
 {
     DIR *dir;
@@ -228,16 +273,32 @@ int searchOverwriteSS(ino_t inode, const char *newFilename, const char *prevName
         {
             if (inode == myPreviousInfo.st_ino && !isSymbolicLink(snapshotPath)) 
             {
-                fprintf(comp_file, "Snapshot with the same inode(%ld) already exists for file: %s (previous file name: %s)\n", inode, newFilename, prevName);
+                fprintf(comp_file, "Snapshot with the same inode(%ld) already exists for file: %s (previous file name: %s)\n\n", inode, newFilename, prevName);
                 if(strcmp(newFilename, prevName) == 0)
                 {
-                    fprintf(comp_file, "File %s was moved from %s to %s\n\n", newFilename, myPreviousInfo.parent_folder, myCurrentInfo.parent_folder);
+                    fprintf(comp_file, "---File %s was moved from %s to %s\n\n", newFilename, myPreviousInfo.parent_folder, myCurrentInfo.parent_folder);
+                    char ss_name[PATH_LENGTH] = PATH_TO_SSDIR;
+                    char aux[PATH_LENGTH] = "";
+                    pathToSaveFilename(myPreviousInfo.parent_folder, aux);
+                    strcat(ss_name, aux);
+                    ss_name[strlen(ss_name) - 2] = '\0';
+                    strcat(ss_name, newFilename);
+                    strcat(ss_name, ".ss");
+
+                    if (remove(ss_name) == 0) 
+                    {
+                        printf("File '%s' deleted successfully.\n", ss_name);
+                    } 
+                    else 
+                    {
+                        perror("Error deleting file");
+                    }
                 }
                 else
                 {
                     char ss_name[PATH_LENGTH] = PATH_TO_SSDIR;
                     char aux[PATH_LENGTH] = "";
-                    path_to_safe_filename(myPreviousInfo.parent_folder, aux);
+                    pathToSaveFilename(myPreviousInfo.parent_folder, aux);
                     strcat(ss_name, aux);
                     ss_name[strlen(ss_name) - 2] = '\0';
                     strcat(ss_name, prevName);
@@ -261,55 +322,75 @@ int searchOverwriteSS(ino_t inode, const char *newFilename, const char *prevName
 }
 
 
-// Compare previous vs current version of snapshot
-int comparePrevVsCurr(const char *path)
-{
-    int counter = 0;
+// PIPES processes and script
+// void isolateMaliciousFile(const char *filePath) 
+// {
+//     pid_t pid = fork();
+//     if (pid < 0) 
+//     {
+//         perror("Error caused by fork.");
+//         exit(EXIT_FAILURE);
+//     } 
+//     else if (pid == 0) 
+//     {
+//         execl(PATH_TO_MOVE_SCRIPT, "move_file.sh", filePath, PATH_TO_ISOLATEDIR, NULL);
+//         perror("Error executing move script.");
+//         exit(EXIT_FAILURE);
+//     } 
+//     else 
+//     {
+//         waitpid(pid, NULL, 0);
+//         printf("File %s has been moved to %s.\n", filePath, PATH_TO_ISOLATEDIR);
+//     }
+// }
 
-    fprintf(comp_file, "%ld - %ld\n",myPreviousInfo.st_ino, myCurrentInfo.st_ino);
-    if(myCurrentInfo.atime != myPreviousInfo.atime && myCurrentInfo.st_ino == myPreviousInfo.st_ino)
-    {
-        fprintf(comp_file, "Folder: %s, File: %s was accessed in the meantime\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
-        counter++;
-    }
+// void scanFile(const char *filePath, int *dangerous_count) 
+// {
+//     int pipefd[2];
+//     if (pipe(pipefd) == -1) 
+//     {
+//         perror("Error creating pipe.");
+//         exit(EXIT_FAILURE);
+//     }
 
-    if(myCurrentInfo.mtime != myPreviousInfo.mtime && myCurrentInfo.st_ino == myPreviousInfo.st_ino)
-    {
-        fprintf(comp_file, "Folder: %s, File: %s was modified in the meantime\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
-        counter++;
-    }
+//     pid_t pid = fork();
+//     if (pid < 0) 
+//     {
+//         perror("Error caused by fork.");
+//         exit(EXIT_FAILURE);
+//     } 
+//     else if (pid == 0) 
+//     {
+//         close(pipefd[0]);
+//         dup2(pipefd[1], STDOUT_FILENO);
+//         execl(PATH_TO_VERIFY_SCRIPT, "verify_malicious.sh", filePath, NULL);
+//         close(pipefd[1]);
+//         perror("Error executing verification script.");
+//         exit(EXIT_FAILURE);
+//     } 
+//     else 
+//     {
+//         close(pipefd[1]);
+//         char buffer[1024];
+//         int dangerous_found = 0;
+//         ssize_t bytes_read;
+//         while ((bytes_read = read(pipefd[0], buffer, sizeof(buffer) - 1)) > 0) 
+//         {
+//             buffer[bytes_read] = '\0';
+//             printf("%s", buffer);
 
-    if (myCurrentInfo.st_size < myPreviousInfo.st_size)
-    {
-        fprintf(comp_file, "Folder: %s, File: %s - Some data was removed\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
-        counter++;
-    }
-    else if (myCurrentInfo.st_size > myPreviousInfo.st_size)
-    {
-        fprintf(comp_file, "Folder: %s, File: %s - Some data was added\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
-        counter++;
-    }
-    else
-    {
-        fprintf(comp_file, "Folder: %s, File: %s - Same amount of data\n", myCurrentInfo.parent_folder, myCurrentInfo.filename);
-        counter++;
-    }
+//             if (strstr(buffer, "SAFE") == NULL && strlen(buffer) > 0) 
+//             {
+//                 isolateMaliciousFile(filePath);
+//                 (*dangerous_count)++;
+//             }
+//         }
 
-    if(strcmp(myCurrentInfo.parent_folder, myPreviousInfo.parent_folder) != 0 && myCurrentInfo.st_ino == myPreviousInfo.st_ino)
-    {
-        fprintf(comp_file, "File: %s was moved from %s TO %s\n", myCurrentInfo.filename, myPreviousInfo.parent_folder, myCurrentInfo.parent_folder);
-        counter++;
-    }
-
-    if(myCurrentInfo.st_mode != myPreviousInfo.st_mode)
-    {
-        fprintf(comp_file, "File: %s; permissions were changed from %s TO %s\n", myCurrentInfo.filename, mode_to_symbolic(myPreviousInfo.st_mode), mode_to_symbolic(myCurrentInfo.st_mode));
-    }
-
-    fprintf(comp_file, "\n");
-
-    return counter;
-}
+//         close(pipefd[0]);
+//         int status;
+//         waitpid(pid, &status, 0);
+//     }
+// }
 
 
 // PIPES processes and script
@@ -378,7 +459,6 @@ void checkPermissions(const char *permissions, const char *file_path, int *ct) {
     }
 }
 
-
 // Process the directory and call the subdirectories
 void processDirectory(const char *dir_name, const char *snapshots_dir, const char *isolate_dir, int *dangerous_counter) 
 {
@@ -398,8 +478,7 @@ void processDirectory(const char *dir_name, const char *snapshots_dir, const cha
         char path[PATH_LENGTH];
         snprintf(path, sizeof(path), "%s/%s", dir_name, file->d_name);
         
-        if (strcmp(file->d_name, ".") == 0 || strcmp(file->d_name, "..") == 0 ||
-            strstr(file->d_name, ".ss") != NULL)
+        if (strcmp(file->d_name, ".") == 0 || strcmp(file->d_name, "..") == 0)
         {
             continue;
         }
@@ -418,7 +497,7 @@ void processDirectory(const char *dir_name, const char *snapshots_dir, const cha
 
             // Get parent folder
             char safe_filename[PATH_LENGTH];
-            path_to_safe_filename(path, safe_filename);
+            pathToSaveFilename(path, safe_filename);
             if (snprintf(snapshot_path, PATH_LENGTH, "%s/%s.ss", snapshots_dir, safe_filename) >= PATH_LENGTH)
             {
                 fprintf(stderr, "Error: File path too long.\n");
@@ -482,9 +561,9 @@ void processDirectory(const char *dir_name, const char *snapshots_dir, const cha
                 exit(EXIT_FAILURE);
             }
 
-            // Create formatted path for .sym
+            // Create formatted path for sym links
             char safe_filename[PATH_LENGTH];
-            path_to_safe_filename(path, safe_filename);
+            pathToSaveFilename(path, safe_filename);
             char snapshot_path[PATH_LENGTH];
             if (snprintf(snapshot_path, PATH_LENGTH, "%s/%s.ss", snapshots_dir, safe_filename) >= PATH_LENGTH)
             {
@@ -524,7 +603,7 @@ void processDirectory(const char *dir_name, const char *snapshots_dir, const cha
 
         if (isDirectory(path)) 
         {
-            printf("%d\n", *dangerous_counter);
+            //printf("%d\n", *dangerous_counter);
             processDirectory(path, snapshots_dir, isolate_dir, dangerous_counter);
         }
     }
@@ -583,7 +662,7 @@ void searchForDeletedFilesInSnapshotsDir(const char *snapshots_dir, int nrArg, c
     struct dirent *snapshot_file;
     while ((snapshot_file = readdir(ss_dir)) != NULL) 
     {
-        if (strcmp(snapshot_file->d_name, ".") == 0 || strcmp(snapshot_file->d_name, "..") == 0 || strstr(snapshot_file->d_name, ".sym")) 
+        if (strcmp(snapshot_file->d_name, ".") == 0 || strcmp(snapshot_file->d_name, "..") == 0) 
         {
             continue;
         }
@@ -653,7 +732,6 @@ int main(int argc, char *argv[])
 
     const char *snapshots_dir = argv[2];
     const char *isolate_dir = argv[4];
-    int dangerous_counter = 0;
 
     for (int i = 5; i < argc; i++) 
     {
@@ -667,6 +745,8 @@ int main(int argc, char *argv[])
         {
             printf("parent process id: %d\n", getppid());
             printf("child process id: %d\n", getpid());
+
+            int dangerous_counter = 0;
             processDirectory(argv[i], snapshots_dir, isolate_dir, &dangerous_counter);
             printf("Snapshot for %s created successfully.\n", argv[i]);
             exit(dangerous_counter); // Return the count of dangerous files as the exit status

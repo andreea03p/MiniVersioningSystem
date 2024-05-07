@@ -1,8 +1,8 @@
 Mode: 100777
 Size: 13
 Modification Time: 1713293484
-Access Time: 1714953297
+Access Time: 1715111613
 Parent Folder: DIRECTOR1/subdir2/..
 Inode: 536262
-Filename: mere.txt
+Filename: pere.txt
 Link: NO LINK

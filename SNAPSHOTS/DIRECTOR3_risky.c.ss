@@ -1,8 +1,8 @@
-Mode: 100000
+Mode: 100777
 Size: 15662
 Modification Time: 1714948827
-Access Time: 1715028127
+Access Time: 1715111274
 Parent Folder: DIRECTOR3/..
 Inode: 529546
-Filename: risk.c
+Filename: risky.c
 Link: NO LINK
