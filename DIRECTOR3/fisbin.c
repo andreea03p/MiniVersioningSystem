@@ -445,6 +445,7 @@ int main(int argc, char *argv[])
 }
 */
 
+
 /// apl 5.2
 
 int main()
@@ -459,6 +460,7 @@ int main()
     FILE *ff = fopen("two.bin", "wb");
     if(f == NULL)
     {
+    
         perror("eroare dechdiere OUTPUT file\n");
         exit(-1);
     }

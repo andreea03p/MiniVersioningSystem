@@ -1,8 +1,8 @@
-Mode: 100000
-Size: 9337
-Modification Time: 1715116278
-Access Time: 1715202532
+Mode: 100777
+Size: 9343
+Modification Time: 1715204177
+Access Time: 1715204177
 Parent Folder: DIRECTOR3/..
-Inode: 524831
+Inode: 535203
 Filename: fisbin.c
 Link: NO LINK

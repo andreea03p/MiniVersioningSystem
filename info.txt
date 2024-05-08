@@ -4,7 +4,7 @@ Parent Folder: DIRECTOR3/..
 File Permissions: rwxrwxrwx
 Size: 9975 bytes
 Last Modification Time: Thu May  9 00:02:27 2024
-Last Access Time: Thu May  9 00:13:26 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 
 Inode: 524767
@@ -13,16 +13,16 @@ Parent Folder: DIRECTOR3/..
 File Permissions: rwxrwxrwx
 Size: 40000 bytes
 Last Modification Time: Thu Jun 13 19:28:14 2019
-Last Access Time: Wed May  8 00:27:24 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 
-Inode: 524831
+Inode: 535203
 Filename: fisbin.c
 Parent Folder: DIRECTOR3/..
-File Permissions: ---------
-Size: 9337 bytes
-Last Modification Time: Wed May  8 00:11:18 2024
-Last Access Time: Thu May  9 00:08:52 2024
+File Permissions: rwxrwxrwx
+Size: 9343 bytes
+Last Modification Time: Thu May  9 00:36:17 2024
+Last Access Time: Thu May  9 00:36:17 2024
 NO LINK
 
 Inode: 535024
@@ -31,7 +31,26 @@ Parent Folder: DIRECTOR3/..
 File Permissions: rwxrwxrwx
 Size: 15642 bytes
 Last Modification Time: Wed May  8 23:57:13 2024
-Last Access Time: Thu May  9 00:19:27 2024
+Last Access Time: Thu May  9 00:21:08 2024
+NO LINK
+
+Inode: 528223
+Filename: s3
+Parent Folder: DIRECTOR3/..
+File Permissions: rwxrwxrwx
+Size: 12 bytes
+Last Modification Time: Thu May  9 00:33:59 2024
+Last Access Time: Thu May  9 00:34:01 2024
+The symbolic link DIRECTOR3/s3 points to integers.bin
+
+
+Inode: 534879
+Filename: bd.c
+Parent Folder: DIRECTOR3/..
+File Permissions: rwxrwxrwx
+Size: 2792 bytes
+Last Modification Time: Tue Apr  9 22:35:51 2024
+Last Access Time: Thu May  9 00:36:51 2024
 NO LINK
 
 Inode: 536464
@@ -40,7 +59,7 @@ Parent Folder: DIRECTOR1/subdir/..
 File Permissions: rwxrwxrwx
 Size: 882 bytes
 Last Modification Time: Sun Mar 31 00:01:05 2024
-Last Access Time: Wed May  8 00:27:24 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 
 Inode: 543170
@@ -49,7 +68,7 @@ Parent Folder: DIRECTOR1/subdir/..
 File Permissions: rwxrwxrwx
 Size: 917 bytes
 Last Modification Time: Tue Apr 30 00:58:58 2024
-Last Access Time: Wed May  8 00:27:24 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 
 Inode: 536465
@@ -58,7 +77,7 @@ Parent Folder: DIRECTOR1/..
 File Permissions: rwxrwxrwx
 Size: 520 bytes
 Last Modification Time: Sun Mar 31 00:01:05 2024
-Last Access Time: Wed May  8 00:27:24 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 
 Inode: 534977
@@ -67,7 +86,7 @@ Parent Folder: DIRECTOR1/..
 File Permissions: rwxrwxrwx
 Size: 15648 bytes
 Last Modification Time: Sat May  4 22:21:57 2024
-Last Access Time: Wed May  8 23:58:43 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 
 Inode: 524744
@@ -76,7 +95,7 @@ Parent Folder: DIRECTOR1/subdir2/..
 File Permissions: rwxrwxrwx
 Size: 2006 bytes
 Last Modification Time: Thu Jan 18 21:58:12 2024
-Last Access Time: Wed May  8 00:27:24 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 
 Inode: 534871
@@ -85,7 +104,7 @@ Parent Folder: DIRECTOR1/subdir2/..
 File Permissions: rwxrwxrwx
 Size: 538 bytes
 Last Modification Time: Tue May  7 19:12:36 2024
-Last Access Time: Wed May  8 00:27:24 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 
 Inode: 536262
@@ -94,7 +113,7 @@ Parent Folder: DIRECTOR1/subdir2/..
 File Permissions: rwxrwxrwx
 Size: 13 bytes
 Last Modification Time: Tue Apr 16 21:51:24 2024
-Last Access Time: Wed May  8 00:27:24 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 
 Inode: 529546
@@ -103,7 +122,7 @@ Parent Folder: DIRECTOR1/subdir2/..
 File Permissions: rwxrwxrwx
 Size: 15648 bytes
 Last Modification Time: Sat May  4 22:21:57 2024
-Last Access Time: Wed May  8 17:03:26 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 
 Inode: 535047
@@ -119,10 +138,10 @@ The symbolic link DIRECTOR1/subdir2/s2 points to py.py
 Inode: 529536
 Filename: bobo.txt
 Parent Folder: DIRECTOR1/..
-File Permissions: ---------
+File Permissions: rwxrwxrwx
 Size: 21 bytes
 Last Modification Time: Mon May  6 00:57:33 2024
-Last Access Time: Thu May  9 00:08:52 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 
 Inode: 524832
@@ -131,16 +150,16 @@ Parent Folder: DIRECTOR1/..
 File Permissions: rwxrwxrwx
 Size: 15656 bytes
 Last Modification Time: Wed May  8 23:35:56 2024
-Last Access Time: Wed May  8 23:58:43 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 
 Inode: 535437
 Filename: so.c
 Parent Folder: DIRECTOR2/subdir/..
-File Permissions: ---------
+File Permissions: rwxrwxrwx
 Size: 13 bytes
 Last Modification Time: Tue Apr 16 00:15:02 2024
-Last Access Time: Thu May  9 00:08:52 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 
 Inode: 524763
@@ -149,7 +168,7 @@ Parent Folder: DIRECTOR2/subdir/..
 File Permissions: rwxrwxrwx
 Size: 2063 bytes
 Last Modification Time: Sat Apr 22 21:52:15 2023
-Last Access Time: Wed May  8 00:27:24 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 
 Inode: 535046
@@ -162,22 +181,13 @@ Last Access Time: Wed May  8 20:56:57 2024
 The symbolic link DIRECTOR2/subdir/s1 points to file.csv
 
 
-Inode: 524766
-Filename: file.csv
-Parent Folder: DIRECTOR2/subdir/..
-File Permissions: rwxrwxrwx
-Size: 84 bytes
-Last Modification Time: Sun Jan 22 23:27:21 2023
-Last Access Time: Wed May  8 00:27:24 2024
-NO LINK
-
 Inode: 536463
 Filename: subject.java
 Parent Folder: DIRECTOR2/subdir/subsub/..
 File Permissions: rwxrwxrwx
 Size: 4159 bytes
 Last Modification Time: Sun Mar 31 00:01:05 2024
-Last Access Time: Wed May  8 00:27:24 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 
 Inode: 524761
@@ -186,7 +196,7 @@ Parent Folder: DIRECTOR2/subdir/subsub/..
 File Permissions: rwxrwxrwx
 Size: 28 bytes
 Last Modification Time: Fri May 19 00:54:19 2023
-Last Access Time: Wed May  8 00:27:24 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 
 Inode: 536730
@@ -195,44 +205,34 @@ Parent Folder: DIRECTOR2/subdir/subsub/..
 File Permissions: rwxrwxrwx
 Size: 6070 bytes
 Last Modification Time: Sun Apr 14 00:18:59 2024
-Last Access Time: Wed May  8 00:27:24 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 
-Inode: 528223
+Inode: 524766
+Filename: file.csv
+Parent Folder: DIRECTOR2/..
+File Permissions: rwxrwxrwx
+Size: 84 bytes
+Last Modification Time: Sun Jan 22 23:27:21 2023
+Last Access Time: Thu May  9 00:21:08 2024
+NO LINK
+
+Inode: 524831
 Filename: caractere.c
 Parent Folder: DIRECTOR2/..
 File Permissions: rwxrwxrwx
 Size: 2792 bytes
-Last Modification Time: Tue Apr  9 22:35:51 2024
-Last Access Time: Wed May  8 00:27:24 2024
+Last Modification Time: Thu May  9 00:32:10 2024
+Last Access Time: Thu May  9 00:37:52 2024
 NO LINK
-
-Inode: 524852
-Filename: s
-Parent Folder: DIRECTOR2/..
-File Permissions: rwxrwxrwx
-Size: 4 bytes
-Last Modification Time: Wed May  8 20:56:19 2024
-Last Access Time: Wed May  8 20:56:21 2024
-The symbolic link DIRECTOR2/s points to bd.c
-
 
 Inode: 524830
 Filename: cat.c
 Parent Folder: DIRECTOR2/..
-File Permissions: ---------
+File Permissions: rwxrwxrwx
 Size: 2789 bytes
 Last Modification Time: Mon May  6 23:30:50 2024
-Last Access Time: Thu May  9 00:08:52 2024
-NO LINK
-
-Inode: 534879
-Filename: bd.c
-Parent Folder: DIRECTOR2/..
-File Permissions: rwxrwxrwx
-Size: 2792 bytes
-Last Modification Time: Tue Apr  9 22:35:51 2024
-Last Access Time: Thu May  9 00:19:47 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 
 Inode: 534869
@@ -241,6 +241,6 @@ Parent Folder: DIRECTOR2/..
 File Permissions: rwxrwxrwx
 Size: 46 bytes
 Last Modification Time: Wed May  8 22:09:49 2024
-Last Access Time: Wed May  8 23:55:27 2024
+Last Access Time: Thu May  9 00:21:08 2024
 NO LINK
 

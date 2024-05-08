@@ -196,7 +196,7 @@ int comparePrevVsCurr(const FileInfo *currentInfo, const FileInfo *previousInfo,
     int counter = 0;
 
     fprintf(comp_file, "%ld - %ld\n", previousInfo->st_ino, currentInfo->st_ino);
-    if (currentInfo->atime != previousInfo->atime && currentInfo->st_ino == previousInfo->st_ino) 
+    if (currentInfo->atime != previousInfo->atime) 
     {
         fprintf(comp_file, "Folder: %s, File: %s was accessed in the meantime\n", currentInfo->parent_folder, currentInfo->filename);
         counter++;

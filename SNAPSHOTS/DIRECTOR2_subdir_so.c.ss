@@ -1,7 +1,7 @@
-Mode: 100000
+Mode: 100777
 Size: 13
 Modification Time: 1713215702
-Access Time: 1715202532
+Access Time: 1715203268
 Parent Folder: DIRECTOR2/subdir/..
 Inode: 535437
 Filename: so.c

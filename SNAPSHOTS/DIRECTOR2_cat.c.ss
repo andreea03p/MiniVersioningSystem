@@ -1,7 +1,7 @@
-Mode: 100000
+Mode: 100777
 Size: 2789
 Modification Time: 1715027450
-Access Time: 1715202532
+Access Time: 1715203268
 Parent Folder: DIRECTOR2/..
 Inode: 524830
 Filename: cat.c
