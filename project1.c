@@ -10,7 +10,7 @@
 #include <time.h>
 #include <sys/types.h>
 #include <stdarg.h>
-#include<sys/wait.h>
+#include <sys/wait.h>
 
 
 #define PATH_LENGTH 1000
@@ -66,7 +66,7 @@ int isHardLink(const char *path)
     struct stat statbuf;
     if (lstat(path, &statbuf) != 0) 
     {
-        perror("Unable to get file information");
+        perror("unable to get file information hardlink");
         exit(EXIT_FAILURE);
     }
     return (statbuf.st_nlink > 1) ? 1 : 0;
@@ -310,8 +310,9 @@ int searchOverwriteSS(ino_t inode, const char *newFilename, const char *prevName
 
 
 // PIPES processes and script
-void checkPermissions(const char *permissions, const char *file_path, int *dangerous_files_count) 
+int checkPermissions(const char *permissions, const char *file_path, int *dangerous_files_count) 
 {
+    int ok = 1;
     if (strcmp(permissions, "---------") == 0) 
     {
         int pipefd[2];
@@ -348,16 +349,15 @@ void checkPermissions(const char *permissions, const char *file_path, int *dange
             ssize_t bytes_read;
             int total_dangerous_files = 0;
 
+            //printf("AAAA\n");
             while ((bytes_read = read(pipefd[0], buffer, sizeof(buffer) - 1)) > 0) 
             {
                 buffer[bytes_read] = '\0';
-                if (strcmp(buffer, "SAFE\n") == 0) 
+                printf("\n%s", buffer);
+                
+                if (strcmp(buffer, "SAFE\n") != 0) 
                 {
-                    printf("SAFE\n");
-                } 
-                else 
-                {
-                    printf("%s\n", buffer);
+                    ok = 0;
 
                     pid_t move_pid = fork();
                     if (move_pid == -1) 
@@ -392,13 +392,14 @@ void checkPermissions(const char *permissions, const char *file_path, int *dange
             (*dangerous_files_count) += total_dangerous_files;
         }
     }
+    return ok;
 }
-
 
 
 // Process the directory and call the subdirectories
 void processDirectory(const char *dir_name, const char *snapshots_dir, const char *isolate_dir, int *dangerous_counter, FILE *info_file, FILE *comp_file)
 {
+    int a;
     DIR *dir;
     struct dirent *file;
 
@@ -415,6 +416,7 @@ void processDirectory(const char *dir_name, const char *snapshots_dir, const cha
     
     while ((file = readdir(dir)) != NULL) 
     {
+        //printf("%s %d\n", file->d_name, getpid());
     	// Obtain path         
         char path[PATH_LENGTH];
         snprintf(path, sizeof(path), "%s/%s", dir_name, file->d_name);
@@ -460,81 +462,87 @@ void processDirectory(const char *dir_name, const char *snapshots_dir, const cha
             writeFileInfoToFile(&myCurrentInfo, info_file);
 
             int ct = 0;
-            checkPermissions(mode_to_symbolic(myCurrentInfo.st_mode), path, &ct);
+            a = checkPermissions(mode_to_symbolic(myCurrentInfo.st_mode), path, &ct);
             (*dangerous_counter) += ct;
             
-            int snapshotStatus = readSnapshot(snapshot_path, &myPreviousInfo);
-            if (snapshotStatus == 0) 
+            if(a)
             {
-                if(searchOverwriteSS(file_stat.st_ino, myCurrentInfo.filename, myPreviousInfo.filename, comp_file, &myPreviousInfo, &myCurrentInfo) == 0)
+                int snapshotStatus = readSnapshot(snapshot_path, &myPreviousInfo);
+                if (snapshotStatus == 0) 
                 {
-                    fprintf(comp_file, "file %s added\n\n", myCurrentInfo.filename);
-                }
-                writeSnapshot(snapshot_path, &myCurrentInfo);
-            } 
-            else 
-            {
-                if(comparePrevVsCurr(&myCurrentInfo, &myPreviousInfo, comp_file) > 0)
-                {
+                    if(searchOverwriteSS(file_stat.st_ino, myCurrentInfo.filename, myPreviousInfo.filename, comp_file, &myPreviousInfo, &myCurrentInfo) == 0)
+                    {
+                        fprintf(comp_file, "file %s added\n\n", myCurrentInfo.filename);
+                    }
                     writeSnapshot(snapshot_path, &myCurrentInfo);
+                } 
+                else 
+                {
+                    if(comparePrevVsCurr(&myCurrentInfo, &myPreviousInfo, comp_file) > 0)
+                    {
+                        writeSnapshot(snapshot_path, &myCurrentInfo);
+                    }
                 }
             }
         }
 
-        if (isSymbolicLink(path)) 
+        if(a)
         {
-            char target[PATH_LENGTH];
-            char linkInfo[1000] = "";
-
-            ssize_t len = readlink(path, target, sizeof(target) - 1);
-            if (len != -1) 
+            if (isSymbolicLink(path)) 
             {
-                target[len] = '\0';
-                strcat(linkInfo, "The symbolic link ");
-                strcat(linkInfo, path);
-                strcat(linkInfo, " points to ");
-                strcat(linkInfo, target);
-                strcat(linkInfo, "\n");
-            } 
-            else 
-            {
-                perror("readlink");
-                exit(EXIT_FAILURE);
-            }
+                char target[PATH_LENGTH];
+                char linkInfo[1000] = "";
 
-            // Create formatted path for sym links
-            char safe_filename[PATH_LENGTH];
-            pathToSaveFilename(path, safe_filename);
-            char snapshot_path[PATH_LENGTH];
-            if (snprintf(snapshot_path, PATH_LENGTH, "%s/%s.ss", snapshots_dir, safe_filename) >= PATH_LENGTH)
-            {
-                fprintf(stderr, "Error: File path too long.\n");
-                continue;
-            }
+                ssize_t len = readlink(path, target, sizeof(target) - 1);
+                if (len != -1) 
+                {
+                    target[len] = '\0';
+                    strcat(linkInfo, "The symbolic link ");
+                    strcat(linkInfo, path);
+                    strcat(linkInfo, " points to ");
+                    strcat(linkInfo, target);
+                    strcat(linkInfo, "\n");
+                } 
+                else 
+                {
+                    perror("readlink");
+                    exit(EXIT_FAILURE);
+                }
 
-            
-            if (lstat(path, &file_stat) == -1) 
-            {
-                perror("error getting info lstat\n");
-                exit(EXIT_FAILURE);
-            }
+                // Create formatted path for sym links
+                char safe_filename[PATH_LENGTH];
+                pathToSaveFilename(path, safe_filename);
+                char snapshot_path[PATH_LENGTH];
+                if (snprintf(snapshot_path, PATH_LENGTH, "%s/%s.ss", snapshots_dir, safe_filename) >= PATH_LENGTH)
+                {
+                    perror("Error: File path too long.\n");
+                    continue;
+                }
 
-            // Get parent folder
-            char parent[PATH_LENGTH];
-            snprintf(parent, sizeof(parent), "%s/..", dir_name);
                 
-            myCurrentInfo.st_ino = file_stat.st_ino;
-            myCurrentInfo.st_mode = file_stat.st_mode;
-            myCurrentInfo.st_size = file_stat.st_size;
-            myCurrentInfo.mtime = file_stat.st_mtime;
-            myCurrentInfo.atime = file_stat.st_atime;
-            strcpy(myCurrentInfo.parent_folder, parent);
-            strcpy(myCurrentInfo.filename, file->d_name);
-            strcpy(myCurrentInfo.linkTo, linkInfo);
-            
-            writeFileInfoToFile(&myCurrentInfo, info_file);
-            
-            writeSnapshot(snapshot_path, &myCurrentInfo);
+                if (lstat(path, &file_stat) == -1) 
+                {
+                    perror("error getting info lstat\n");
+                    exit(EXIT_FAILURE);
+                }
+
+                // Get parent folder
+                char parent[PATH_LENGTH];
+                snprintf(parent, sizeof(parent), "%s/..", dir_name);
+                    
+                myCurrentInfo.st_ino = file_stat.st_ino;
+                myCurrentInfo.st_mode = file_stat.st_mode;
+                myCurrentInfo.st_size = file_stat.st_size;
+                myCurrentInfo.mtime = file_stat.st_mtime;
+                myCurrentInfo.atime = file_stat.st_atime;
+                strcpy(myCurrentInfo.parent_folder, parent);
+                strcpy(myCurrentInfo.filename, file->d_name);
+                strcpy(myCurrentInfo.linkTo, linkInfo);
+                
+                writeFileInfoToFile(&myCurrentInfo, info_file);
+                
+                writeSnapshot(snapshot_path, &myCurrentInfo);
+            }
         }
 
         // if (isHardLink(path)) 

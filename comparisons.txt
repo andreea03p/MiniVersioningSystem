@@ -1,11 +1,17 @@
-529546 - 529546
+535057 - 535057
+Folder: DIRECTOR3/.., File: steph.c was accessed in the meantime
 Folder: DIRECTOR3/.., File: steph.c - Same amount of data
 
 524767 - 524767
 Folder: DIRECTOR3/.., File: integers.bin - Same amount of data
 
 524831 - 524831
+Folder: DIRECTOR3/.., File: fisbin.c was accessed in the meantime
 Folder: DIRECTOR3/.., File: fisbin.c - Same amount of data
+
+535024 - 535024
+Folder: DIRECTOR3/.., File: one.txt was accessed in the meantime
+Folder: DIRECTOR3/.., File: one.txt - Same amount of data
 
 536464 - 536464
 Folder: DIRECTOR1/subdir/.., File: sub2.py - Same amount of data
@@ -16,6 +22,9 @@ Folder: DIRECTOR1/subdir/.., File: fisier.txt - Same amount of data
 536465 - 536465
 Folder: DIRECTOR1/.., File: prob.sh - Same amount of data
 
+534977 - 534977
+Folder: DIRECTOR1/.., File: file.txt - Same amount of data
+
 524744 - 524744
 Folder: DIRECTOR1/subdir2/.., File: back.c - Same amount of data
 
@@ -25,10 +34,18 @@ Folder: DIRECTOR1/subdir2/.., File: py.py - Same amount of data
 536262 - 536262
 Folder: DIRECTOR1/subdir2/.., File: pere.txt - Same amount of data
 
+529546 - 529546
+Folder: DIRECTOR1/subdir2/.., File: file.txt - Same amount of data
+
 529536 - 529536
+Folder: DIRECTOR1/.., File: bobo.txt was accessed in the meantime
 Folder: DIRECTOR1/.., File: bobo.txt - Same amount of data
 
+524832 - 524832
+Folder: DIRECTOR1/.., File: bomb.c - Same amount of data
+
 535437 - 535437
+Folder: DIRECTOR2/subdir/.., File: so.c was accessed in the meantime
 Folder: DIRECTOR2/subdir/.., File: so.c - Same amount of data
 
 524763 - 524763
@@ -46,16 +63,17 @@ Folder: DIRECTOR2/subdir/subsub/.., File: file.txt - Same amount of data
 536730 - 536730
 Folder: DIRECTOR2/subdir/subsub/.., File: hello.c - Same amount of data
 
-524830 - 524830
-Folder: DIRECTOR2/.., File: dog.c - Same amount of data
-
 528223 - 528223
 Folder: DIRECTOR2/.., File: caractere.c - Same amount of data
+
+524830 - 524830
+Folder: DIRECTOR2/.., File: cat.c was accessed in the meantime
+Folder: DIRECTOR2/.., File: cat.c - Same amount of data
 
 534879 - 534879
 Folder: DIRECTOR2/.., File: bd.c was accessed in the meantime
 Folder: DIRECTOR2/.., File: bd.c - Same amount of data
 
-524832 - 524832
+534869 - 534869
 Folder: DIRECTOR2/.., File: data.txt - Same amount of data
 
