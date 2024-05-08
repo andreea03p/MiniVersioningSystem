@@ -1,8 +1,8 @@
 Mode: 100777
-Size: 9975
-Modification Time: 1715202147
+Size: 15656
+Modification Time: 1715200556
 Access Time: 1715203268
 Parent Folder: DIRECTOR3/..
-Inode: 535057
-Filename: steph.c
+Inode: 524832
+Filename: bomb.c
 Link: NO LINK
