@@ -1,8 +1,8 @@
-Mode: 100000
+Mode: 100777
 Size: 2792
 Modification Time: 1715430430
-Access Time: 1715437963
+Access Time: 1715445553
 Parent Folder: DIRECTOR3/..
 Inode: 524768
-Filename: bd.c
+Filename: so.c
 Link: NO LINK

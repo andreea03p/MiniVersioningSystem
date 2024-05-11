@@ -274,6 +274,7 @@ int searchOverwriteSS(ino_t inode, const char *newFilename, const char *prevName
                 char buffer[1024];
                 int len = snprintf(buffer, sizeof(buffer), "Snapshot with the same inode(%ld) already exists for file: %s (previous file name: %s)\n\n", inode, newFilename, prevName);
                 write(comp_fd, buffer, len);
+
                 if(strcmp(newFilename, prevName) == 0)
                 {
                     len = snprintf(buffer, sizeof(buffer), "---File %s was moved from %s to %s\n\n", newFilename, myPreviousInfo->parent_folder, myCurrentInfo->parent_folder);
@@ -435,7 +436,7 @@ void processDirectory(const char *dir_name, const char *snapshots_dir, const cha
     
     while ((file = readdir(dir)) != NULL) 
     {
-        //printf("%s %d\n", file->d_name, getpid());
+        // printf("%s %d\n", file->d_name, getpid());
     	// Obtain path         
         char path[PATH_LENGTH];
         snprintf(path, sizeof(path), "%s/%s", dir_name, file->d_name);
@@ -680,6 +681,77 @@ void searchForDeletedFilesInSnapshotsDir(const char *snapshots_dir, int nrArg, c
 }
 
 
+void searchBrokenLinks(const char *dir) 
+{
+    DIR *director;
+    struct dirent *entry;
+    struct stat info;
+    char path[PATH_LENGTH];
+
+    if (!(director = opendir(dir))) 
+    {
+        perror("Failed to open directory");
+        return;
+    }
+
+    while ((entry = readdir(director)) != NULL) 
+    {
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) 
+        {
+            continue;
+        }
+
+        snprintf(path, sizeof(path), "%s/%s", dir, entry->d_name);
+
+        if (lstat(path, &info) == -1) 
+        {
+            perror("Failed to get file information");
+            continue;
+        }
+
+        if (S_ISLNK(info.st_mode)) 
+        {
+            char target[PATH_LENGTH];
+            ssize_t len = readlink(path, target, sizeof(target) - 1);
+            if (len == -1) 
+            {
+                perror("Failed to read symbolic link target");
+                continue;
+            }
+            target[len] = '\0';
+
+            if (target[0] != '/') 
+            {
+                char full_target_path[PATH_LENGTH];
+                int len = snprintf(full_target_path, sizeof(full_target_path), "%s/%s", dirname(strdup(path)), target);
+                if(len > PATH_LENGTH)
+                {
+                    perror("Error too many bytes snprintf\n");
+                    exit(EXIT_FAILURE);
+                }
+                if (stat(full_target_path, &info) == -1) 
+                {
+                    printf("Broken link: %s -> %s (original file modified)\n", path, full_target_path);
+                }
+            } 
+            else 
+            {
+                // Target is absolute
+                if (stat(target, &info) == -1) 
+                {
+                    printf("Broken link: %s -> %s\n", path, target);
+                }
+            }
+        } 
+        else if (S_ISDIR(info.st_mode)) 
+        {
+            searchBrokenLinks(path);
+        }
+    }
+
+    closedir(director);
+}
+
 
 int main(int argc, char *argv[]) 
 {
@@ -740,6 +812,12 @@ int main(int argc, char *argv[])
 
     //Check if there are deleted files by snapshot name
     searchForDeletedFilesInSnapshotsDir(snapshots_dir, argc, argv);
+
+    printf("\n\n");
+    for(int i = 5; i < argc; i++)
+    {
+        searchBrokenLinks(argv[i]);
+    }
     
     close(comp_fd);
     close(info_fd);

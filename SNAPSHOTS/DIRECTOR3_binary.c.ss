@@ -1,7 +1,7 @@
 Mode: 100777
 Size: 9343
 Modification Time: 1715204177
-Access Time: 1715209168
+Access Time: 1715438090
 Parent Folder: DIRECTOR3/..
 Inode: 535203
 Filename: binary.c
