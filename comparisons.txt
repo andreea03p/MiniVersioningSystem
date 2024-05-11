@@ -1,14 +1,8 @@
-524767 - 524767
-Folder: DIRECTOR3/.., File: integers.bin - Same amount of data
+536464 - 536464
+Folder: DIRECTOR1/subdir/.., File: raw.py - Same amount of data
 
 536463 - 536463
 Folder: DIRECTOR2/.., File: subject.java - Same amount of data
-
-536464 - 536464
-Folder: DIRECTOR1/subdir/.., File: raw.py - Same amount of data
-535203 - 535203
-Folder: DIRECTOR3/.., File: fisbin.c - Same amount of data
-
 
 535437 - 535437
 Folder: DIRECTOR2/subdir/.., File: so.c - Same amount of data
@@ -16,11 +10,19 @@ Folder: DIRECTOR2/subdir/.., File: so.c - Same amount of data
 529546 - 529546
 Folder: DIRECTOR1/subdir/.., File: file.txt - Same amount of data
 
-524763 - 524763
-Folder: DIRECTOR2/subdir/.., File: hardcoding.c - Same amount of data
-
 543170 - 543170
 Folder: DIRECTOR1/subdir/.., File: fisier.txt - Same amount of data
+
+Snapshot with the same inode(524765) already exists for file: suspicious.c (previous file name: bomb.c)
+
+524765 - 524765
+Folder: DIRECTOR2/subdir/.., File: suspicious.c - Same amount of data
+
+534871 - 534871
+Folder: DIRECTOR1/.., File: py.py - Same amount of data
+
+524763 - 524763
+Folder: DIRECTOR2/subdir/subsub/.., File: hardcoding.c - Same amount of data
 
 536465 - 536465
 Folder: DIRECTOR1/.., File: prob.sh - Same amount of data
@@ -34,32 +36,39 @@ Folder: DIRECTOR1/.., File: file.txt - Same amount of data
 536730 - 536730
 Folder: DIRECTOR2/subdir/subsub/.., File: hello.c - Same amount of data
 
-524744 - 524744
-Folder: DIRECTOR1/subdir2/.., File: back.c - Same amount of data
+524762 - 524762
+Folder: DIRECTOR1/.., File: red.txt - Same amount of data
 
 524766 - 524766
 Folder: DIRECTOR2/.., File: file.csv - Same amount of data
 
-534871 - 534871
-Folder: DIRECTOR1/subdir2/.., File: py.py - Same amount of data
+524744 - 524744
+Folder: DIRECTOR1/subdir2/.., File: back.c - Same amount of data
 
-524831 - 524831
+528537 - 528537
 Folder: DIRECTOR2/.., File: caractere.c - Same amount of data
 
 536262 - 536262
 Folder: DIRECTOR1/subdir2/.., File: pere.txt - Same amount of data
 
-529536 - 529536
-Folder: DIRECTOR1/.., File: bobo.txt - Same amount of data
+393776 - 393776
+Folder: DIRECTOR3/.., File: steph.c was accessed in the meantime
+Folder: DIRECTOR3/.., File: steph.c - Same amount of data
 
-534879 - 534879
-Folder: DIRECTOR3/.., File: bd.c was accessed in the meantime
-Folder: DIRECTOR3/.., File: bd.c - Same amount of data
+535203 - 535203
+Folder: DIRECTOR3/.., File: binary.c - Same amount of data
+
+524767 - 524767
+Folder: DIRECTOR3/.., File: integer.bin - Same amount of data
+
+529536 - 529536
+Folder: DIRECTOR2/.., File: date.txt was accessed in the meantime
+Folder: DIRECTOR2/.., File: date.txt - Same amount of data
 
 524830 - 524830
-Folder: DIRECTOR2/.., File: cat.c was accessed in the meantime
-Folder: DIRECTOR2/.., File: cat.c - Same amount of data
+Folder: DIRECTOR2/.., File: green.c - Same amount of data
 
-534869 - 534869
-Folder: DIRECTOR2/.., File: data.txt - Same amount of data
+524768 - 524768
+Folder: DIRECTOR3/.., File: bd.c was accessed in the meantime
+Folder: DIRECTOR3/.., File: bd.c - Same amount of data
 

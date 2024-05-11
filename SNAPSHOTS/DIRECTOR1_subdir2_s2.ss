@@ -1,7 +1,7 @@
 Mode: 120777
 Size: 5
 Modification Time: 1715191092
-Access Time: 1715194658
+Access Time: 1715416211
 Parent Folder: DIRECTOR1/subdir2/..
 Inode: 535047
 Filename: s2

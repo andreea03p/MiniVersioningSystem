@@ -8,9 +8,9 @@ evaluate_file()
     num_words=$(wc -w < "$file_path")
     num_chars=$(wc -m < "$file_path")
 
-    # Check if the file meets suspicious criteria
+    # Check if the file meets suspicious criteria - non-ascii and specific words
     if [ "$num_lines" -lt 3 ] && [ "$num_words" -gt 1000 ] && [ "$num_chars" -gt 2000 ]; then
-        if LC_ALL=C grep -q '[^\x00-\x7F]' "$file_path" || grep -q -E 'corrupted|dangerous|risk|attack|malware|malicious' "$file_path"; then
+        if LC_ALL=C grep -q -P '[\x80-\xFF]' "$file_path" || grep -q -Ei 'corrupted|dangerous|risk|attack|malware|malicious' "$file_path"; then
             echo "$(basename "$file_path")"
         else
             echo "SAFE"

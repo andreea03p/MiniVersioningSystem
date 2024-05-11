@@ -1,8 +1,8 @@
 Mode: 100777
-Size: 15659
-Modification Time: 1715430658
+Size: 15653
+Modification Time: 1715430910
 Access Time: 1715430977
 Parent Folder: DIRECTOR3/..
-Inode: 524764
-Filename: bomb.c
+Inode: 524770
+Filename: one.txt
 Link: NO LINK

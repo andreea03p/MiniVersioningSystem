@@ -1,8 +1,8 @@
 Mode: 100777
 Size: 538
 Modification Time: 1715098356
-Access Time: 1715203268
-Parent Folder: DIRECTOR1/subdir2/..
+Access Time: 1715422946
+Parent Folder: DIRECTOR1/..
 Inode: 534871
 Filename: py.py
 Link: NO LINK

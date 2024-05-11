@@ -1,8 +1,8 @@
 Mode: 100777
 Size: 9343
 Modification Time: 1715204177
-Access Time: 1715205399
+Access Time: 1715209168
 Parent Folder: DIRECTOR3/..
 Inode: 535203
-Filename: fisbin.c
+Filename: binary.c
 Link: NO LINK
